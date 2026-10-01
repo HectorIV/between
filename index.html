@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BETWEEN — Portada animada</title>
+<style>
+  :root{ --gold:#c9922f; --teal:#2ad3c6; --bg:#08080a; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:#e8e6e0;
+       font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh}
+  .wrap{display:flex;gap:38px;flex-wrap:wrap;justify-content:center;
+        align-items:flex-start;padding:34px 22px 60px}
+  .stage{position:relative;flex:0 0 auto}
+  .stage img{width:min(420px,88vw);height:auto;display:block;
+             border-radius:3px;box-shadow:0 26px 70px rgba(0,0,0,.85),0 0 0 1px #1e1c1a}
+  .glow{position:absolute;inset:-12% -6%;z-index:-1;filter:blur(60px);
+        background:radial-gradient(closest-side,rgba(201,146,47,.30),transparent 72%);
+        pointer-events:none}
+  h1{margin:0 0 6px;font-size:1.65rem;letter-spacing:.34em;font-weight:600;
+     background:linear-gradient(90deg,#fff,#f0d9a8 45%,#c9922f);
+     -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:#8d8a84;font-size:.83rem;letter-spacing:.22em;margin-bottom:22px}
+  .side{max-width:430px}
+  h2{font-size:.72rem;letter-spacing:.2em;color:var(--gold);margin:0 0 12px;
+     text-transform:uppercase;font-weight:600}
+  .dl{display:grid;gap:9px}
+  a.btn{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:11px 15px;background:#141416;border:1px solid #2a2724;border-radius:6px;
+    color:#ded9d0;text-decoration:none;font-size:.83rem;transition:.16s}
+  a.btn:hover{border-color:var(--gold);background:#1b1a17;transform:translateY(-1px)}
+  a.btn b{color:var(--gold);font-weight:600;font-size:.74rem;letter-spacing:.06em}
+  .note{color:#78756f;font-size:.74rem;line-height:1.65;margin-top:20px}
+  table{width:100%;border-collapse:collapse;font-size:.75rem;margin-top:8px}
+  td{padding:6px 0;border-bottom:1px solid #201e1c;vertical-align:top}
+  td:first-child{color:#cfd6d5;white-space:nowrap;padding-right:12px}
+  td:last-child{color:#7e7b75;text-align:right;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));
+        gap:10px;margin-top:10px}
+  .grid figure{margin:0}
+  .grid img{width:100%;display:block;border-radius:3px;
+            background:
+              repeating-conic-gradient(#2a2a2e 0 25%,#1d1d21 0 50%) 0 0/14px 14px}
+  .grid figcaption{font-size:.6rem;color:#807d77;margin-top:4px;
+                   letter-spacing:.04em;word-break:break-word}
+  .fx{margin-top:22px}
+  .fx li{color:#a29e97;font-size:.79rem;line-height:1.75;margin-left:-4px}
+  .fx ul{padding-left:16px;margin:0}
+  code{color:var(--teal);font-size:.73rem}
+  @media(max-width:860px){.wrap{gap:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+    <div class="glow"></div>
+    <img src="anim/BETWEEN_animada_HD.webp" alt="Portada animada de BETWEEN">
+  </div>
+
+  <div class="side">
+    <h1>BETWEEN</h1>
+    <div class="sub">KARLA VILLANUEVA &nbsp;·&nbsp; D'McPHERSON</div>
+
+    <h2>Descargar</h2>
+    <div class="dl">
+      <a class="btn" href="anim/BETWEEN_animada_1080x1920.mp4" download><span>MP4 vertical 1080×1920</span><b>7.6 MB</b></a>
+      <a class="btn" href="anim/BETWEEN_animada_HD.webp" download><span>WebP animado 990×1520</span><b>20 MB</b></a>
+      <a class="btn" href="anim/BETWEEN_animada.mp4" download><span>MP4 496×760</span><b>1.6 MB</b></a>
+      <a class="btn" href="anim/BETWEEN_animada.gif" download><span>GIF 356×546</span><b>11 MB</b></a>
+      <a class="btn" href="anim/poster.png" download><span>Póster PNG</span><b>0.5 MB</b></a>
+    </div>
+
+    <h2 style="margin-top:26px">Capas por elemento</h2>
+    <table>
+      <tr><td><code>00_fondo_negro</code></td><td>RGB + alfa</td></tr>
+      <tr><td><code>01_halo_resplandor</code></td><td>calor radial</td></tr>
+      <tr><td><code>02_rayos_luz</code></td><td>rotatorio</td></tr>
+      <tr><td><code>03_luna</code></td><td>respira</td></tr>
+      <tr><td><code>04_marco_ornamental</code></td><td>dorado</td></tr>
+      <tr><td><code>05_mariposas</code></td><td>6 BGP</td></tr>
+      <tr><td><code>06_chica</code></td><td>cuerpo</td></tr>
+      <tr><td><code>07_vestido_turquesa</code></td><td>destello</td></tr>
+      <tr><td><code>08_chispas</code></td><td>127 puntos</td></tr>
+      <tr><td><code>09_titulo_between</code></td><td>tipografía</td></tr>
+      <tr><td><code>10_autora</code></td><td>tipografía</td></tr>
+      <tr><td><code>11_adorno_rombo</code></td><td>filigrana</td></tr>
+      <tr><td><code>12_logo_editorial</code></td><td>marca</td></tr>
+    </table>
+
+    <h2 style="margin-top:26px">Efectos animados</h2>
+    <div class="fx"><ul>
+      <li>La luna respira con dos armónicos superpuestos.</li>
+      <li>Los rayos rotan lentamente y modulan su intensidad.</li>
+      <li>El halo late en torno al disco.</li>
+      <li>El dorado del marco titila de forma sutil.</li>
+      <li>Un barrido turquesa recorre el vestido.</li>
+      <li>Las 6 mariposas aletean y flotan con distinta fase.</li>
+      <li>Las 127 chispas parpadean a ritmo propio.</li>
+      <li>Bloom en altas luces, viñeta y grano cinematográfico.</li>
+    </ul></div>
+
+    <p class="note">Todo el pipeline es determinista y reproducible:
+      <code>build_layers.py</code> extrae las capas,
+      <code>build_anim.py</code> renderiza los 144 fotogramas,
+      <code>encode2.py</code> + <code>encode_mp4.py</code> empaquetan.
+      Bucle de 6 s a 24 fps.</p>
+  </div>
+</div>
+</body>
+</html>

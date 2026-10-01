@@ -1,0 +1,1010 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BETWEEN — Karla Villanueva | Novela de fantasía épica juvenil</title>
+<meta name="description" content="Una bendición puede ser un regalo… o una condena. Entra en Between, la novela de fantasía épica juvenil de Karla Villanueva: una academia mágica, tres pueblos y el equilibrio entre la luz y la oscuridad.">
+<meta property="og:title" content="BETWEEN — Karla Villanueva">
+<meta property="og:description" content="Una bendición puede ser un regalo… o una condena. Novela de fantasía épica juvenil ambientada en una academia mágica.">
+<meta property="og:image" content="assets/cover_dark.png">
+<meta property="og:type" content="book">
+<meta name="theme-color" content="#05060a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================ TOKENS */
+:root{
+  --ink:#05060a; --ink2:#0b0d14;
+  --gold:#c9922f; --gold-lt:#f0d9a8; --gold-dk:#8a6220;
+  --cream:#f2ece0; --muted:#8e8a82; --dim:#5d5a55;
+  --teal:#2ad3c6;
+  --line:rgba(201,146,47,.22);
+  --line-soft:rgba(242,236,224,.09);
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --wrap:1180px;
+  --ease:cubic-bezier(.22,.68,.32,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--sans);
+  font-weight:300;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#0a0a0a}
+
+#motes{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aurora{position:fixed;inset:-20%;z-index:-1;pointer-events:none;opacity:.5;
+  background:
+    radial-gradient(38vw 38vw at 12% 8%,rgba(201,146,47,.16),transparent 62%),
+    radial-gradient(46vw 46vw at 88% 22%,rgba(42,211,198,.09),transparent 64%),
+    radial-gradient(52vw 52vw at 50% 108%,rgba(201,146,47,.11),transparent 60%);
+  filter:blur(28px)}
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.wrap{width:min(100% - 2.5rem,var(--wrap));margin-inline:auto;position:relative;z-index:2}
+
+/* ============================================================ PRELOADER */
+#preload{position:fixed;inset:0;z-index:100;background:var(--ink);display:grid;place-items:center;
+  transition:opacity .8s var(--ease),visibility .8s}
+#preload.done{opacity:0;visibility:hidden}
+.pl-t{font-family:var(--serif);font-size:1.5rem;letter-spacing:.46em;color:var(--gold-lt);
+  text-indent:.46em;text-align:center;margin-bottom:22px}
+.pl-moon{width:74px;height:74px;margin:0 auto 26px;border-radius:50%;
+  background:radial-gradient(circle at 42% 38%,#fff8e6,#f0d9a8 42%,#c9922f 78%,#7a5416);
+  box-shadow:0 0 46px rgba(240,217,168,.42),0 0 110px rgba(201,146,47,.22);
+  animation:plb 2.4s var(--ease) infinite}
+@keyframes plb{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.pl-bar{width:190px;height:1px;background:var(--line-soft);margin:0 auto;overflow:hidden}
+.pl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-dk),var(--gold-lt));
+  animation:plf 1.7s var(--ease) forwards}
+@keyframes plf{to{width:100%}}
+
+/* ============================================================ NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:60;padding:1.05rem 0;transition:all .5s var(--ease)}
+#nav.solid{background:rgba(5,6,10,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-soft);padding:.7rem 0}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{display:flex;align-items:center;gap:.7rem;font-family:var(--serif);font-size:1.18rem;
+  letter-spacing:.3em;color:var(--cream)}
+.brand svg{width:22px;height:22px;flex:0 0 auto;opacity:.9}
+.brand small{display:block;font-family:var(--sans);font-size:.53rem;letter-spacing:.28em;
+  color:var(--muted);font-weight:400;margin-top:2px}
+.nav-links{display:flex;gap:1.9rem;font-size:.76rem;letter-spacing:.16em;color:var(--muted)}
+.nav-links a{position:relative;padding:.3rem 0;transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;
+  background:var(--gold);transition:width .35s var(--ease)}
+.nav-links a:hover{color:var(--cream)}
+.nav-links a:hover::after{width:100%}
+.btn-nav{font-size:.73rem;letter-spacing:.14em;padding:.62rem 1.15rem;border:1px solid var(--gold);
+  color:var(--gold-lt);border-radius:2px;transition:all .35s var(--ease);white-space:nowrap}
+.btn-nav:hover{background:var(--gold);color:#0a0a0a;box-shadow:0 0 28px rgba(201,146,47,.36)}
+.burger{display:none;width:26px;height:16px;position:relative;cursor:pointer;background:none;border:0}
+.burger i{position:absolute;left:0;width:100%;height:1px;background:var(--cream);transition:.35s var(--ease)}
+.burger i:nth-child(1){top:0}.burger i:nth-child(2){top:7.5px}.burger i:nth-child(3){top:15px}
+.burger.on i:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.burger.on i:nth-child(2){opacity:0}
+.burger.on i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.mob{display:none;position:fixed;inset:0;z-index:55;background:rgba(5,6,10,.97);
+  padding:6rem 2rem 3rem;flex-direction:column;gap:.2rem}
+.mob.on{display:flex}
+.mob a{font-family:var(--serif);font-size:1.7rem;padding:.65rem 0;color:var(--cream);
+  border-bottom:1px solid var(--line-soft)}
+.mob a.cta{margin-top:1.6rem;text-align:center;font-family:var(--sans);font-size:.8rem;
+  letter-spacing:.16em;border:1px solid var(--gold);color:var(--gold-lt);padding:.9rem}
+
+/* ============================================================ HERO */
+#hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:8.5rem 0 5rem;overflow:hidden}
+#hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;will-change:transform}
+#hero-shade{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,rgba(5,6,10,.95) 0%,rgba(5,6,10,.72) 42%,rgba(5,6,10,.35) 68%,rgba(5,6,10,.7) 100%)}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:4rem;align-items:center;
+  width:min(100% - 2.5rem,var(--wrap));margin-inline:auto;position:relative;z-index:2}
+
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-size:.68rem;letter-spacing:.34em;
+  color:var(--gold);margin-bottom:1.6rem;text-transform:uppercase}
+.eyebrow::before{content:"";width:38px;height:1px;background:var(--gold);opacity:.7}
+
+h1.title{margin:0;font-family:var(--serif);font-weight:300;line-height:.86;
+  font-size:clamp(4.4rem,12.5vw,10.5rem);letter-spacing:.02em;
+  background:linear-gradient(178deg,#fffdf7 4%,var(--gold-lt) 42%,var(--gold) 82%,var(--gold-dk) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 12px 44px rgba(201,146,47,.2))}
+h1.title span{display:inline-block;transform:translateY(105%);opacity:0}
+body.ready h1.title span{animation:riseIn .95s var(--ease) forwards}
+@keyframes riseIn{to{transform:translateY(0);opacity:1}}
+
+.author{margin:1.5rem 0 0;font-size:.82rem;letter-spacing:.42em;color:var(--cream);text-transform:uppercase}
+.author span{color:var(--gold)}
+.publisher{margin:.55rem 0 0;font-size:.63rem;letter-spacing:.3em;color:var(--dim)}
+.tagline{margin:2.2rem 0 0;font-family:var(--serif);font-size:clamp(1.25rem,2.1vw,1.72rem);
+  line-height:1.5;color:var(--cream);max-width:30ch;font-style:italic;font-weight:300}
+.hook{margin:1.5rem 0 0;color:var(--muted);max-width:46ch;font-size:.94rem}
+.hook b{color:var(--gold-lt);font-weight:400}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:.85rem;margin-top:2.6rem}
+.btn{display:inline-flex;align-items:center;gap:.7rem;padding:1.02rem 1.9rem;font-size:.76rem;
+  letter-spacing:.2em;text-transform:uppercase;border-radius:2px;border:1px solid var(--gold);
+  color:#0a0a0a;background:linear-gradient(100deg,var(--gold-lt),var(--gold));
+  transition:all .4s var(--ease);font-weight:500}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(201,146,47,.34)}
+.btn.ghost{background:transparent;color:var(--gold-lt)}
+.btn.ghost:hover{background:rgba(201,146,47,.12);border-color:var(--gold-lt)}
+.btn svg{width:15px;height:15px;flex:0 0 auto}
+
+.meta-row{display:flex;flex-wrap:wrap;gap:1.8rem;margin-top:2.8rem;padding-top:1.7rem;
+  border-top:1px solid var(--line-soft)}
+.meta{font-size:.7rem;letter-spacing:.16em;color:var(--dim)}
+.meta b{display:block;color:var(--cream);font-size:.86rem;letter-spacing:.1em;font-weight:400;margin-top:.28rem}
+
+.cover-stage{position:relative;perspective:1500px;display:grid;place-items:center}
+.book{position:relative;width:min(340px,74vw);transform-style:preserve-3d;
+  transition:transform .9s var(--ease);animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotateY(-9deg) rotateX(2deg)}
+  50%{transform:translateY(-18px) rotateY(-6deg) rotateX(-1deg)}}
+.book:hover{animation-play-state:paused;transform:rotateY(0deg) rotateX(0deg) scale(1.03)}
+.book-media{position:relative;border-radius:3px 7px 7px 3px;overflow:hidden;
+  box-shadow:-22px 30px 60px rgba(0,0,0,.72),0 0 0 1px rgba(242,236,224,.09),0 0 90px rgba(201,146,47,.16)}
+.book-media video{width:100%;display:block}
+.book-media::before{content:"";position:absolute;left:0;top:0;bottom:0;width:13px;z-index:3;
+  background:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.34) 55%,rgba(255,255,255,.05));
+  border-radius:3px 0 0 3px}
+.book-media::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(102deg,rgba(255,255,255,.09) 0 42%,transparent 43% 100%)}
+.book-reflect{position:absolute;left:4%;right:4%;top:100%;height:60px;margin-top:8px;
+  background:linear-gradient(180deg,rgba(201,146,47,.15),transparent 78%);
+  filter:blur(14px);border-radius:50%}
+.book-halo{position:absolute;inset:-16% -20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(240,217,168,.30),rgba(201,146,47,.1) 46%,transparent 74%);
+  filter:blur(34px);animation:haloB 7s ease-in-out infinite}
+@keyframes haloB{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+
+.badge{position:absolute;z-index:4;display:flex;align-items:center;gap:.5rem;padding:.55rem .85rem;
+  background:rgba(9,10,15,.84);backdrop-filter:blur(9px);border:1px solid var(--line);
+  border-radius:2px;font-size:.64rem;letter-spacing:.16em;color:var(--gold-lt);white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.badge.one{top:11%;left:-9%}
+.badge.two{bottom:19%;right:-11%}
+.badge i{width:5px;height:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 9px var(--teal);
+  animation:blip 2s ease-in-out infinite}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+.flutter{position:absolute;z-index:1;pointer-events:none;opacity:.5;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+
+.cue{position:absolute;bottom:1.9rem;left:50%;transform:translateX(-50%);z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:.7rem;font-size:.58rem;
+  letter-spacing:.32em;color:var(--dim)}
+.cue i{width:1px;height:42px;background:linear-gradient(180deg,var(--gold),transparent);
+  animation:cueD 2.1s var(--ease) infinite}
+@keyframes cueD{0%{transform:scaleY(0);transform-origin:top}
+  55%{transform:scaleY(1);transform-origin:top}
+  56%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ============================================================ SECTIONS */
+section{position:relative;padding:clamp(5rem,11vw,9.5rem) 0}
+.kicker{font-size:.66rem;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;
+  display:flex;align-items:center;gap:.75rem;margin-bottom:1.35rem}
+.kicker::before{content:"";width:30px;height:1px;background:var(--gold);opacity:.65}
+.kicker::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);max-width:150px}
+h2.h{font-family:var(--serif);font-weight:300;font-size:clamp(2.1rem,4.6vw,3.5rem);
+  line-height:1.12;margin:0 0 1.4rem}
+h2.h em{font-style:italic;color:var(--gold-lt)}
+.lead{color:var(--muted);font-size:1.03rem;max-width:58ch;margin:0}
+p{margin:0 0 1.15rem}p:last-child{margin-bottom:0}
+
+.orn{display:flex;align-items:center;justify-content:center;gap:1rem;margin:0 0 3rem}
+.orn span{height:1px;width:min(120px,16vw);background:linear-gradient(90deg,transparent,var(--line))}
+.orn span:last-child{background:linear-gradient(90deg,var(--line),transparent)}
+.orn svg{width:22px;height:12px;opacity:.9}
+
+/* ============================================================ HOOK */
+#hook{text-align:center;background:radial-gradient(60vw 40vw at 50% 50%,rgba(201,146,47,.075),transparent 68%)}
+.hook-big{font-family:var(--serif);font-weight:300;font-style:italic;
+  font-size:clamp(1.9rem,5.4vw,4.1rem);line-height:1.18;margin:0 auto;max-width:20ch;
+  background:linear-gradient(180deg,#fffdf7,var(--gold-lt) 70%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hook-sub{margin:2.4rem auto 0;max-width:52ch;color:var(--muted);font-size:1rem}
+
+/* ============================================================ STORY */
+.story-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:4.5rem;align-items:start}
+.prose{max-width:64ch}
+.prose p{color:#c9c4ba;font-size:1.03rem}
+.prose p.first::first-letter{float:left;font-family:var(--serif);font-size:4.4em;line-height:.82;
+  padding:.06em .1em 0 0;color:var(--gold-lt);font-weight:400}
+.pull{border-left:2px solid var(--gold);padding:.2rem 0 .2rem 1.5rem;margin:2.2rem 0;
+  font-family:var(--serif);font-style:italic;font-size:1.34rem;line-height:1.5;color:var(--gold-lt)}
+
+.facts{border:1px solid var(--line-soft);border-radius:3px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.028),transparent)}
+.facts-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--line-soft);font-size:.66rem;
+  letter-spacing:.28em;color:var(--gold);text-transform:uppercase}
+.facts table{width:100%;border-collapse:collapse;font-size:.86rem}
+.facts td{padding:.85rem 1.5rem;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.facts tr:last-child td{border-bottom:0}
+.facts td:first-child{color:var(--dim);width:46%;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;padding-top:1rem}
+.facts td:last-child{color:var(--cream)}
+
+/* ============================================================ PUEBLOS */
+#pueblos{background:linear-gradient(180deg,transparent,rgba(201,146,47,.035),transparent)}
+.tribes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:3.4rem}
+.tribe{position:relative;padding:2.3rem 1.9rem 2.1rem;border:1px solid var(--line-soft);
+  border-radius:3px;background:linear-gradient(180deg,rgba(255,255,255,.022),transparent);
+  transition:all .55s var(--ease);overflow:hidden}
+.tribe::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .55s var(--ease);
+  background:radial-gradient(120% 80% at 50% 0%,rgba(201,146,47,.14),transparent 70%)}
+.tribe:hover{border-color:var(--line);transform:translateY(-6px);box-shadow:0 26px 54px rgba(0,0,0,.44)}
+.tribe:hover::before{opacity:1}
+.tribe>*{position:relative;z-index:1}
+.t-ico{width:52px;height:52px;margin-bottom:1.5rem;color:var(--gold)}
+.tribe h3{margin:0 0 .2rem;font-family:var(--serif);font-weight:400;font-size:1.72rem;
+  letter-spacing:.06em;color:var(--cream)}
+.tribe .tr{font-size:.62rem;letter-spacing:.26em;color:var(--gold);text-transform:uppercase;margin-bottom:1.15rem}
+.tribe p{color:var(--muted);font-size:.92rem}
+
+/* ============================================================ LUZ / OSCURIDAD */
+#dual{background:#04050a;overflow:hidden}
+.dual-head{text-align:center;margin-bottom:3.4rem}
+.dual-head h2.h{max-width:19ch;margin-inline:auto}
+.dual-head .lead{margin-inline:auto;text-align:center}
+
+.slider-wrap{position:relative;max-width:900px;margin:0 auto;border-radius:4px;overflow:hidden;
+  box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 0 1px var(--line-soft);
+  user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:ew-resize}
+.slider-wrap .frame{position:relative;display:grid;grid-template-columns:50% 50%;gap:0}
+.slider-wrap .side{padding:2.6rem 2rem;display:grid;align-content:center;min-height:340px}
+.slider-wrap .side.dark{background:#070810;position:relative}
+.slider-wrap .side.dark::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 70% at 60% 40%,rgba(42,211,198,.11),transparent 70%);pointer-events:none}
+.slider-wrap .side.light{background:radial-gradient(70% 70% at 40% 40%,#2a1f0c,#0d0a06);position:relative}
+.slider-wrap .side.light::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(70% 60% at 40% 35%,rgba(240,217,168,.2),transparent 72%);pointer-events:none}
+.slab{position:relative;z-index:1}
+.slab .lbl{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:.9rem}
+.side.dark .lbl{color:var(--teal)}.side.light .lbl{color:var(--gold-lt)}
+.slab h3{margin:0 0 .8rem;font-family:var(--serif);font-weight:300;font-size:clamp(1.5rem,3vw,2.15rem);line-height:1.18}
+.side.dark h3{color:#cfe9e6}.side.light h3{color:var(--cream)}
+.slab p{font-size:.9rem;margin:0}
+.side.dark p{color:#7e9a97}.side.light p{color:#b6a289}
+.knob{position:absolute;top:0;bottom:0;left:50%;width:2px;z-index:4;pointer-events:none;
+  transform:translateX(-1px);background:linear-gradient(180deg,transparent,var(--gold),transparent)}
+.knob b{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;
+  border-radius:50%;background:rgba(9,10,15,.9);border:1px solid var(--gold);display:grid;
+  place-items:center;box-shadow:0 8px 26px rgba(0,0,0,.6)}
+.knob b::before{content:"";width:11px;height:11px;border-top:1px solid var(--gold-lt);
+  border-right:1px solid var(--gold-lt);transform:rotate(-135deg) translate(-1px,-1px)}
+.knob b::after{content:"";position:absolute;width:11px;height:11px;border-bottom:1px solid var(--gold-lt);
+  border-left:1px solid var(--gold-lt);transform:rotate(-135deg) translate(1px,1px)}
+.dual-hint{margin-top:1.3rem;text-align:center;font-size:.68rem;letter-spacing:.24em;color:var(--dim)}
+
+/* ============================================================ VALORES */
+.marquee{overflow:hidden;padding:1.4rem 0;border-block:1px solid var(--line-soft);
+  background:rgba(201,146,47,.028)}
+.mq-track{display:flex;gap:3.4rem;width:max-content;animation:mq 34s linear infinite}
+.marquee:hover .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.mq-item{display:flex;align-items:center;gap:3.4rem;font-family:var(--serif);
+  font-size:clamp(1.4rem,3vw,2.15rem);color:var(--cream);white-space:nowrap;letter-spacing:.04em}
+.mq-item::after{content:"";width:6px;height:6px;transform:rotate(45deg);background:var(--gold);opacity:.8;flex:0 0 auto}
+
+#valores{padding-top:clamp(4rem,8vw,7rem)}
+.val-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;
+  background:var(--line-soft);border:1px solid var(--line-soft);margin-top:3.4rem}
+.val{background:var(--ink);padding:2rem 1.7rem;transition:background .45s var(--ease)}
+.val:hover{background:#0c0e15}
+.val .n{font-family:var(--serif);font-size:1.05rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.7rem}
+.val h4{margin:0 0 .5rem;font-family:var(--serif);font-weight:400;font-size:1.32rem;letter-spacing:.05em}
+.val p{margin:0;color:var(--muted);font-size:.87rem}
+
+/* ============================================================ CITA */
+#cita{text-align:center}
+.cita-in{max-width:24ch;margin:0 auto}
+#cita blockquote{margin:0;font-family:var(--serif);font-weight:300;font-style:italic;
+  font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:1.28;
+  background:linear-gradient(180deg,#fffdf7,var(--gold-lt) 76%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+#cita cite{display:block;margin-top:1.9rem;font-size:.68rem;letter-spacing:.3em;color:var(--muted);
+  font-style:normal;text-transform:uppercase}
+
+/* ============================================================ TRAILER */
+#trailer-sec{padding-top:0}
+#trailer{display:grid;grid-template-columns:.95fr 1.05fr;gap:4rem;align-items:center}
+.trail-box{position:relative;border-radius:4px;overflow:hidden;
+  box-shadow:0 40px 90px rgba(0,0,0,.68),0 0 0 1px var(--line-soft)}
+.trail-box video{width:100%;display:block}
+.trail-cap{margin-top:1rem;font-size:.72rem;letter-spacing:.14em;color:var(--dim);text-align:center}
+.f-list{list-style:none;padding:0;margin:2.4rem 0 0;display:grid;gap:.85rem}
+.f-list li{display:flex;gap:.9rem;align-items:flex-start;font-size:.93rem;color:#c2bdb3}
+.f-list li::before{content:"";width:7px;height:7px;margin-top:.62rem;flex:0 0 auto;transform:rotate(45deg);
+  background:var(--gold);box-shadow:0 0 10px rgba(201,146,47,.5)}
+
+/* ============================================================ AUTORA */
+#autora{background:linear-gradient(180deg,transparent,rgba(42,211,198,.028),transparent)}
+.au-grid{display:grid;grid-template-columns:300px 1fr;gap:3.6rem;align-items:center}
+.au-card{position:relative;border:1px solid var(--line-soft);border-radius:3px;padding:2.6rem 2rem;
+  text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);overflow:hidden}
+.au-card::after{content:"KA";position:absolute;right:-14px;bottom:-42px;font-family:var(--serif);
+  font-size:8rem;color:rgba(201,146,47,.075);line-height:1;pointer-events:none}
+.au-card img{width:96px;margin:0 auto 1.5rem}
+.au-card h3{margin:0;font-family:var(--serif);font-weight:400;font-size:1.85rem;letter-spacing:.07em}
+.au-card .since{margin-top:.45rem;font-size:.65rem;letter-spacing:.26em;color:var(--gold);text-transform:uppercase}
+.au-body p{color:var(--muted);max-width:62ch}
+.au-sign{margin-top:1.6rem;font-family:var(--serif);font-style:italic;font-size:1.5rem;color:var(--gold-lt)}
+
+/* ============================================================ COMPRAR */
+#comprar{position:relative;overflow:hidden;background:radial-gradient(70vw 50vw at 50% 0%,rgba(201,146,47,.13),transparent 66%)}
+.buy-in{max-width:760px;margin:0 auto;text-align:center}
+.buy-in h2.h{max-width:17ch;margin-inline:auto}
+.buy-in .cta-row{justify-content:center;margin-top:2.2rem}
+.buy-note{margin-top:1.7rem;font-size:.74rem;color:var(--dim);letter-spacing:.06em}
+.formats{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:2.4rem}
+.chip{font-size:.68rem;letter-spacing:.16em;padding:.5rem .95rem;border-radius:100px;
+  border:1px solid var(--line-soft);color:var(--muted);text-transform:uppercase}
+
+/* ============================================================ FOOTER */
+footer{padding:4.5rem 0 2.6rem;border-top:1px solid var(--line-soft);
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.5))}
+.foot{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:3rem}
+.foot-brand{font-family:var(--serif);font-size:1.35rem;letter-spacing:.3em;margin-bottom:.9rem}
+.foot p{color:var(--dim);font-size:.86rem;max-width:34ch}
+.foot h5{margin:0 0 1.1rem;font-size:.65rem;letter-spacing:.26em;color:var(--gold);text-transform:uppercase}
+.foot ul{list-style:none;padding:0;margin:0;display:grid;gap:.7rem}
+.foot ul a{color:var(--muted);font-size:.86rem;transition:color .3s}
+.foot ul a:hover{color:var(--gold-lt)}
+.foot-b{margin-top:3.4rem;padding-top:1.7rem;border-top:1px solid var(--line-soft);display:flex;
+  flex-wrap:wrap;gap:1rem;justify-content:space-between;font-size:.7rem;color:var(--dim);letter-spacing:.1em}
+.foot-b img{height:26px;opacity:.5}
+
+/* ============================================================ REVEAL */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .95s var(--ease),transform .95s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+.rv.d4{transition-delay:.4s}.rv.d5{transition-delay:.5s}
+
+@media (max-width:1080px){
+  .hero-grid{grid-template-columns:1fr;gap:3.5rem;text-align:center}
+  .cover-stage{order:-1}
+  .book{width:min(280px,62vw)}
+  .eyebrow,.cta-row,.meta-row{justify-content:center}
+  .tagline,.hook{margin-inline:auto}
+  .story-grid,#trailer{grid-template-columns:1fr;gap:3rem}
+  .au-grid{grid-template-columns:1fr;gap:2.6rem}
+  .au-card{max-width:340px;margin-inline:auto}
+  .tribes{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .badge.one{left:-3%}.badge.two{right:-3%}
+}
+@media (max-width:760px){
+  .nav-links,.btn-nav{display:none}
+  .burger{display:block}
+  .meta-row{gap:1.3rem}
+  .btn{padding:.92rem 1.5rem;font-size:.72rem}
+  h1.title{font-size:clamp(3.4rem,17vw,6rem)}
+  .slider-wrap .frame{grid-template-columns:1fr!important}
+  .slider-wrap .side{min-height:auto;padding:2rem 1.6rem}
+  .knob{display:none}
+  .foot{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="preload"><div>
+  <div class="pl-moon"></div>
+  <div class="pl-t">BETWEEN</div>
+  <div class="pl-bar"><i></i></div>
+</div></div>
+
+<div class="aurora"></div>
+<canvas id="motes"></canvas>
+<div class="noise"></div>
+
+<!-- ============================= NAV ============================= -->
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#hero" aria-label="Inicio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+        <circle cx="12" cy="12" r="8.4"/><path d="M12 3.6v16.8M3.6 12h16.8"/>
+      </svg>
+      <span>BETWEEN<small>KARLA VILLANUEVA</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#historia">La historia</a>
+      <a href="#pueblos">Los pueblos</a>
+      <a href="#dual">El don</a>
+      <a href="#valores">Valores</a>
+      <a href="#autora">Autora</a>
+    </div>
+    <a class="btn-nav" href="https://www.amazon.es/-/en/Between-Karla-Villanueva/dp/9962141699"
+       target="_blank" rel="noopener">Comprar en Amazon</a>
+    <button class="burger" id="burger" aria-label="Menú"><i></i><i></i><i></i></button>
+  </div>
+</nav>
+
+<div class="mob" id="mob">
+  <a href="#historia">La historia</a>
+  <a href="#pueblos">Los pueblos</a>
+  <a href="#dual">El don</a>
+  <a href="#valores">Valores</a>
+  <a href="#autora">Autora</a>
+  <a href="#comprar">Comprar</a>
+  <a class="cta" href="https://www.amazon.es/-/en/Between-Karla-Villanueva/dp/9962141699"
+     target="_blank" rel="noopener">Comprar en Amazon</a>
+</div>
+
+<!-- ============================= HERO ============================= -->
+<header id="hero">
+  <img id="hero-bg" src="assets/hero_bg.jpg" alt="" aria-hidden="true">
+  <div id="hero-shade"></div>
+
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">Novela de fantasía épica juvenil</div>
+      <h1 class="title" id="title" aria-label="Between"></h1>
+      <p class="author">Karla <span>·</span> Villanueva</p>
+      <p class="publisher">D'McPherson</p>
+
+      <p class="tagline">«Una bendición puede ser un regalo… o una condena.»</p>
+      <p class="hook">Al cumplir dieciséis años, el destino de una joven <b>manskling</b> queda en
+        manos de la diosa de la Luna. Solo unos pocos son elegidos para recibir su don: un poder
+        capaz de iluminar incluso los rincones más oscuros del mundo.</p>
+
+      <div class="cta-row">
+        <a class="btn" href="https://www.amazon.es/-/en/Between-Karla-Villanueva/dp/9962141699"
+           target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4 7h16l-1.4 12.2a1 1 0 0 1-1 .8H6.4a1 1 0 0 1-1-.8Z"/>
+            <path d="M9 9.5V6a3 3 0 0 1 6 0v3.5"/></svg>
+          Comprar el libro
+        </a>
+        <a class="btn ghost" href="#historia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          Descubrir la historia
+        </a>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta">Género<b>Fantasía épica · Juvenil</b></div>
+        <div class="meta">Ambientación<b>Academia mágica</b></div>
+        <div class="meta">ISBN<b>9962141699</b></div>
+        <div class="meta">Editorial<b>D'McPherson</b></div>
+      </div>
+    </div>
+
+    <div class="cover-stage">
+      <div class="book-halo"></div>
+      <figure class="book" id="book">
+        <div class="book-media">
+          <video autoplay muted loop playsinline preload="metadata" poster="anim/poster.png"
+                 aria-label="Portada animada de Between">
+            <source src="anim/BETWEEN_animada.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="book-reflect"></div>
+      </figure>
+      <div class="badge one"><i></i> Portada animada</div>
+      <div class="badge two"><i></i> Tres pueblos · una elección</div>
+    </div>
+  </div>
+
+  <div class="cue"><i></i>DESLIZA</div>
+</header>
+
+<!-- ============================= HOOK ============================= -->
+<section id="hook">
+  <div class="wrap">
+    <div class="orn rv">
+      <span></span>
+      <svg viewBox="0 0 44 22" fill="none" stroke="#c9922f" stroke-width="1.3">
+        <path d="M2 11h13l7-7 7 7h13"/>
+      </svg>
+      <span></span>
+    </div>
+    <p class="hook-big rv">Solo cuando la paz sea restaurada, todas las preguntas tendrán respuestas.</p>
+    <p class="hook-sub rv d1">Desde tiempos inmemoriales, la diosa de la Luna ha concedido un regalo
+      especial a los pueblos protegidos por su manto. Solo unos pocos afortunados han recibido
+      esta bendición.</p>
+  </div>
+</section>
+
+<!-- ============================= HISTORIA ============================= -->
+<section id="historia">
+  <div class="wrap story-grid">
+    <div class="prose">
+      <div class="kicker rv">La historia</div>
+      <h2 class="h rv d1">Una academia, <em>tres pueblos</em>, un equilibrio frágil</h2>
+      <p class="lead rv d2" style="margin-bottom:2.4rem"><em>Between</em> es una hermosa
+        aventura épica que se desarrolla en una prestigiosa academia donde estudiantes de distintos
+        pueblos fantásticos —mansklings, diubaks y cazuts— se encuentran y desencuentran en el
+        eterno conflicto entre el bien y el mal, la luz y la oscuridad.</p>
+
+      <p class="first rv d2">Desde tiempos inmemoriales, la diosa de la Luna ha concedido un
+        regalo especial a los pueblos protegidos por su manto. Solo unos pocos afortunados reciben
+        esta bendición que puede iluminar incluso los rincones más oscuros de su mundo. La
+        protagonista de esta historia cumplirá dieciséis años, edad en la que un miembro del pueblo
+        manskling puede recibir esta dicha. ¿Será la elegida? ¿Surgirá alguna rivalidad y conflicto?</p>
+
+      <p class="rv d3">La protagonista deberá enfrentar secretos antiguos, rivalidades peligrosas
+        y fuerzas que amenazan con romper el frágil equilibrio entre la luz y la oscuridad. Entre
+        nuevas amistades y decisiones que marcarán su vida para siempre, descubrirá que no todo
+        poder trae paz… y que algunas verdades pueden cambiarlo todo.</p>
+
+      <div class="pull rv d3">«Para crear lo fantástico también debe comprenderse lo real.»</div>
+
+      <p class="rv d4">La autora sabe que para crear lo fantástico también debe comprenderse lo
+        real; por eso, en un ambiente donde todo parece posible, fusiona <em>misterio</em> y
+        <em>emociones profundas</em> que ayudan a entender nuestra búsqueda de la felicidad y del
+        bien. El respeto a la pluralidad, el amor, la amistad, la solidaridad y la paz son valores
+        que la novela defiende para contrarrestar la guerra y el odio.</p>
+    </div>
+
+    <aside class="facts rv d2">
+      <div class="facts-h">Ficha de la obra</div>
+      <table>
+        <tbody>
+          <tr><td>Título</td><td><em>Between</em></td></tr>
+          <tr><td>Autora</td><td>Karla Villanueva</td></tr>
+          <tr><td>Editorial</td><td>D'McPherson</td></tr>
+          <tr><td>ISBN</td><td>9962141699</td></tr>
+          <tr><td>Género</td><td>Fantasía épica juvenil</td></tr>
+          <tr><td>Pueblos</td><td>Mansklings · Diubaks · Cazuts</td></tr>
+          <tr><td>Eje</td><td>La luz y la oscuridad</td></tr>
+          <tr><td>Plataforma</td><td>Amazon</td></tr>
+        </tbody>
+      </table>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================= PUEBLOS ============================= -->
+<section id="pueblos">
+  <div class="wrap">
+    <div style="text-align:center">
+      <div class="kicker rv" style="justify-content:center">Los pueblos</div>
+      <h2 class="h rv d1" style="max-width:20ch;margin-inline:auto">Tres procedencias,
+        <em>una sola academia</em></h2>
+      <p class="lead rv d2" style="margin-inline auto;text-align:center;max-width:52ch">
+        Mansklings, diubaks y cazuts comparten pasillos, salones y secretos. Cada uno llega
+        con su propia forma de mirar el mundo.</p>
+    </div>
+
+    <div class="tribes">
+      <article class="tribe rv">
+        <svg class="t-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1">
+          <circle cx="24" cy="17" r="7.5"/><path d="M9 41c0-8.3 6.7-15 15-15s15 6.7 15 15"/>
+          <path d="M24 4.5v2M24 27.5v2" opacity=".5"/>
+        </svg>
+        <h3>Mansklings</h3>
+        <div class="tr">El pueblo de la protagonista</div>
+        <p>A los dieciséis años, una de sus miembros puede recibir la bendición de la diosa de
+          la Luna. Solo unos pocos son elegidos. ¿Será ella una de ellos?</p>
+      </article>
+
+      <article class="tribe rv d1">
+        <svg class="t-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1">
+          <path d="M24 4 8 40h32L24 4Z"/><path d="M14 24h20M17 15h14M11 32h26"/>
+        </svg>
+        <h3>Diubaks</h3>
+        <div class="tr">Otro pueblo, otra manera</div>
+        <p>Comparten la academia con el resto de pueblos y llegan con sus propias historias y
+          feridas. Bajo el mismo techo, sus caminos se cruzan una y otra vez.</p>
+      </article>
+
+      <article class="tribe rv d2">
+        <svg class="t-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1">
+          <path d="M6 34c6-16 14-24 18-24s12 8 18 24"/><path d="M24 10v28"/>
+          <circle cx="24" cy="7" r="2.6" fill="currentColor" stroke="none"/>
+        </svg>
+        <h3>Cazuts</h3>
+        <div class="tr">En el filo del conflicto</div>
+        <p>El eterno conflicto entre el bien y el mal nunca se apaga del todo. Cuando la luna se
+          eclipsa, sus decisiones pondrán a prueba el equilibrio entre la luz y la oscuridad.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= LUZ / OSCURIDAD ============================= -->
+<section id="dual">
+  <div class="wrap">
+    <div class="dual-head">
+      <div class="kicker rv" style="justify-content:center">El conflicto</div>
+      <h2 class="h rv d1">La luz y la oscuridad</h2>
+      <p class="lead rv d2">Arrastra para recorrer el umbral. El don de la Luna no distingue entre
+        bondad y maldad: solo entre quien está dispuesto a usarlo.</p>
+    </div>
+
+    <div class="slider-wrap rv d2" id="sw">
+      <div class="frame" id="swFrame">
+        <div class="side dark">
+          <div class="slab">
+            <div class="lbl">Oscuridad</div>
+            <h3>Lo que el poder<br>tiene de hambre</h3>
+            <p>Un poder capaz de iluminar los rincones más oscuros del mundo también puede
+              apagarlos. No todo don trae paz.</p>
+          </div>
+        </div>
+        <div class="side light">
+          <div class="slab">
+            <div class="lbl">Luz</div>
+            <h3>La bendición<br>de la diosa</h3>
+            <p>Solo unos pocos son elegidos para recibirla, y esa elección cambia el destino para
+              siempre.</p>
+          </div>
+        </div>
+      </div>
+      <div class="knob" id="knob"><b></b></div>
+    </div>
+    <p class="dual-hint rv d3">← ARRASTRA →</p>
+  </div>
+</section>
+
+<!-- ============================= MARQUESINA ============================= -->
+<div class="marquee rv">
+  <div class="mq-track" id="mq">
+    <div class="mq-item"><span>Respeto</span></div>
+    <div class="mq-item"><span>Amistad</span></div>
+    <div class="mq-item"><span>Solidaridad</span></div>
+    <div class="mq-item"><span>Paz</span></div>
+    <div class="mq-item"><span>Identidad</span></div>
+    <div class="mq-item"><span>Pluralidad</span></div>
+  </div>
+</div>
+
+<!-- ============================= VALORES ============================= -->
+<section id="valores">
+  <div class="wrap">
+    <div style="text-align:center">
+      <div class="kicker rv" style="justify-content:center">Qué defiende</div>
+      <h2 class="h rv d1">Los valores de <em>Between</em></h2>
+      <p class="lead rv d2" style="margin-inline auto;text-align:center;max-width:54ch">
+        Magia y emoción profunda no van por separado: la novela usa lo fantástico para hablar
+        también de cómo buscamos la felicidad.</p>
+    </div>
+
+    <div class="val-grid">
+      <div class="val rv"><div class="n">I</div><h4>Respeto</h4>
+        <p>A la pluralidad: convivir con pueblos, formas de ver y maneras distintas de estar en el mundo.</p></div>
+      <div class="val rv d1"><div class="n">II</div><h4>Amor</h4>
+        <p>No como ornamento, sino como decisión que cambia una vida para siempre.</p></div>
+      <div class="val rv d2"><div class="n">III</div><h4>Amistad</h4>
+        <p>El vínculo entre quienes vienen de mundos opuestos y deciden entenderse.</p></div>
+      <div class="val rv d3"><div class="n">IV</div><h4>Solidaridad</h4>
+        <p>El eco de un pueblo que se enfrenta a la guerra y al odio desde la razón.</p></div>
+      <div class="val rv d4"><div class="n">V</div><h4>Paz</h4>
+        <p>El único estado en el que todas las preguntas tienen respuestas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CITA ============================= -->
+<section id="cita">
+  <div class="wrap cita-in">
+    <div class="orn rv" style="margin-bottom:2.4rem">
+      <span></span>
+      <svg viewBox="0 0 44 22" fill="none" stroke="#c9922f" stroke-width="1.3">
+        <path d="M2 11h13l7-7 7 7h13"/>
+      </svg>
+      <span></span>
+    </div>
+    <blockquote class="rv">«Solo cuando la paz sea restaurada, todas las preguntas tendrán
+      respuestas…»</blockquote>
+    <cite class="rv d1">Un personaje de <em>Between</em></cite>
+  </div>
+</section>
+
+<!-- ============================= TRAILER ============================= -->
+<section id="trailer-sec">
+  <div class="wrap" id="trailer">
+    <div class="rv">
+      <div class="kicker">La portada viva</div>
+      <h2 class="h">Mira cómo <em>respira</em> la luna</h2>
+      <p class="lead" style="margin-bottom:0">La imagen de portada fue reconstruida en trece
+        capas independientes —luna, rayos, halo, marco, figura, vestido, mariposas, chispas y
+        tipografía— y reanimada para que cada una respire a su propio ritmo.</p>
+      <ul class="f-list">
+        <li>La luna late con dos armónicos superpuestos.</li>
+        <li>Los rayos rotan y el halo se expande.</li>
+        <li>Un barrido turquesa recorre el vestido.</li>
+        <li>Seis mariposas aletean con fases independientes.</li>
+        <li>127 chispas parpadean a ritmo propio.</li>
+      </ul>
+    </div>
+    <div class="rv d1">
+      <div class="trail-box">
+        <video autoplay muted loop playsinline preload="metadata" poster="anim/poster.png"
+               aria-label="Portada animada de Between">
+          <source src="anim/BETWEEN_animada.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p class="trail-cap">BETWEEN · portada animada · bucle de 6 s</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= AUTORA ============================= -->
+<section id="autora">
+  <div class="wrap au-grid">
+    <div class="au-card rv">
+      <img src="assets/logo.png" alt="Logotipo de D'McPherson">
+      <h3>Karla Villanueva</h3>
+      <div class="since">Autora</div>
+    </div>
+    <div class="au-body">
+      <div class="kicker rv">La autora</div>
+      <h2 class="h rv d1">Fantasía con <em>raíz</em></h2>
+      <!--
+        Texto transcrito parcialmente de la contraportada (la imagen de la captura
+        es de baja resolución). LO QUE FALTE DEBE COMPLETARLO LA AUTORA.
+      -->
+      <p class="rv d2">Karla Villanueva (Panamá, 1997) es escritora e ingeniera de software.
+        Se apasiona la fantasía, el romance y las historias que intrigan, y las cuenta a través de
+        la escritura y el dibujo.</p>
+      <p class="rv d3"><em>Between</em> es su primera novela. Una historia sobre el destino, la
+        identidad y la lucha interna, escrita para quienes saben que comprender lo maravilloso
+        empieza por comprender lo real.</p>
+      <p class="au-sign rv d4">— Karla Villanueva</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= COMPRAR ============================= -->
+<section id="comprar">
+  <div class="wrap buy-in">
+    <div class="kicker rv" style="justify-content:center">Disponible ahora</div>
+    <h2 class="h rv d1">Empieza a leer <em>Between</em></h2>
+    <p class="lead rv d2" style="margin-inline auto;text-align:center;max-width:46ch">
+      Una novela de fantasía épica juvenil donde el destino, la identidad y la lucha interna
+      se entrelazan.</p>
+    <div class="cta-row rv d3">
+      <a class="btn" href="https://www.amazon.es/-/en/Between-Karla-Villanueva/dp/9962141699"
+         target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M4 7h16l-1.4 12.2a1 1 0 0 1-1 .8H6.4a1 1 0 0 1-1-.8Z"/>
+          <path d="M9 9.5V6a3 3 0 0 1 6 0v3.5"/></svg>
+        Comprar en Amazon
+      </a>
+      <a class="btn ghost" href="#trailer-sec">Ver la portada animada</a>
+    </div>
+    <p class="buy-note rv d4">ISBN 9962141699 · Editado por D'McPherson · Consulta formatos y
+      disponibilidad en la ficha de Amazon</p>
+    <div class="formats rv d5">
+      <span class="chip">Fantasía épica</span>
+      <span class="chip">Juvenil</span>
+      <span class="chip">Academia mágica</span>
+      <span class="chip">Tres pueblos</span>
+      <span class="chip">Luz y oscuridad</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= FOOTER ============================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="foot-brand">BETWEEN</div>
+        <p>Una novela de fantasía épica juvenil de Karla Villanueva, publicada por D'McPherson.
+          Magia, misterio y emociones profundas.</p>
+      </div>
+      <div>
+        <h5>La obra</h5>
+        <ul>
+          <li><a href="#historia">La historia</a></li>
+          <li><a href="#pueblos">Los pueblos</a></li>
+          <li><a href="#dual">El don de la Luna</a></li>
+          <li><a href="#valores">Valores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Comprar</h5>
+        <ul>
+          <li><a href="https://www.amazon.es/-/en/Between-Karla-Villanueva/dp/9962141699"
+             target="_blank" rel="noopener">Amazon España</a></li>
+          <li><a href="#comprar">Ver formatos</a></li>
+          <li><a href="#autora">Sobre la autora</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-b">
+      <span>© 2026 Karla Villanueva · D'McPherson. Todos los derechos reservados.</span>
+      <img src="assets/logo.png" alt="D'McPherson">
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $  = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------------------------------------- preloader + título */
+  document.body.classList.add("locked");
+  addEventListener("load", () => {
+    setTimeout(() => {
+      $("#preload").classList.add("done");
+      document.body.classList.add("ready");
+      document.body.classList.remove("locked");
+    }, reduce ? 100 : 1500);
+  });
+  // red de seguridad por si 'load' ya pasó
+  setTimeout(() => {
+    $("#preload").classList.add("done");
+    document.body.classList.add("ready");
+    document.body.classList.remove("locked");
+  }, 4000);
+
+  $("#title").innerHTML = [...("BETWEEN")]
+    .map((ch, i) => `<span style="animation-delay:${0.12 + i * 0.075}s">${ch}</span>`).join("");
+
+  /* ---------------------------------------------- nav */
+  const nav = $("#nav");
+  const onScroll = () => nav.classList.toggle("solid", scrollY > 40);
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  const burger = $("#burger"), mob = $("#mob");
+  burger.addEventListener("click", () => {
+    burger.classList.toggle("on");
+    mob.classList.toggle("on");
+    document.body.classList.toggle("locked", mob.classList.contains("on"));
+  });
+  $$("#mob a").forEach(a => a.addEventListener("click", () => {
+    burger.classList.remove("on"); mob.classList.remove("on");
+    document.body.classList.remove("locked");
+  }));
+
+  /* ---------------------------------------------- reveal on scroll */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  $$(".rv").forEach(el => io.observe(el));
+
+  /* ---------------------------------------------- marquesina infinita */
+  const mq = $("#mq");
+  mq.innerHTML += mq.innerHTML;
+
+  /* ---------------------------------------------- parallax hero + tilt del libro */
+  const heroBg = $("#hero-bg"), book = $("#book"), hero = $("#hero"), stage = $(".cover-stage");
+  if (!reduce) {
+    let tick = false;
+    addEventListener("scroll", () => {
+      if (tick) return;
+      tick = true;
+      requestAnimationFrame(() => {
+        const y = scrollY;
+        if (y < hero.offsetHeight * 1.2) {
+          heroBg.style.transform = `translate3d(0,${y * 0.28}px,0) scale(1.08)`;
+          heroBg.style.opacity = String(Math.max(0, 1 - y / (hero.offsetHeight * 0.95)));
+        }
+        tick = false;
+      });
+    }, { passive: true });
+
+    stage.addEventListener("pointermove", e => {
+      const r = stage.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      book.style.animationPlayState = "paused";
+      book.style.transform = `rotateY(${px * 15}deg) rotateX(${-py * 11}deg)`;
+    });
+    stage.addEventListener("pointerleave", () => {
+      book.style.animationPlayState = "running";
+      book.style.transform = "";
+    });
+  }
+
+  /* ---------------------------------------------- slider luz/oscuridad */
+  const sw = $("#sw"), frame = $("#swFrame"), knob = $("#knob");
+  if (sw) {
+    const setPos = clientX => {
+      const r = sw.getBoundingClientRect();
+      let p = (clientX - r.left) / r.width;
+      p = Math.min(0.88, Math.max(0.12, p));
+      frame.style.gridTemplateColumns = `${p * 100}% ${(1 - p) * 100}%`;
+      knob.style.left = `${p * 100}%`;
+    };
+    let dragging = false;
+    const stop = () => { dragging = false; };
+    sw.addEventListener("pointerdown", e => {
+      dragging = true;
+      setPos(e.clientX);
+      e.preventDefault();   // evita seleccionar el texto al arrastrar
+    });
+    // el arrastre se escucha en window: si el puntero sale del bloque,
+    // el control sigue respondiendo hasta soltar el boton
+    addEventListener("pointermove", e => { if (dragging) setPos(e.clientX); });
+    addEventListener("pointerup", stop);
+    addEventListener("pointercancel", stop);
+    addEventListener("blur", stop);
+    // centrar al cargar
+    requestAnimationFrame(() => {
+      const r = sw.getBoundingClientRect();
+      setPos(r.left + r.width * 0.5);
+    });
+  }
+
+  /* ---------------------------------------------- canvas: motas de luz */
+  const cv = $("#motes"), ctx = cv.getContext("2d");
+  let W, H, motes = [];
+  const resize = () => {
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    const n = Math.min(90, Math.round(W * H / 26000));
+    motes = Array.from({ length: n }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.4, a: Math.random(),
+      s: Math.random() * 0.22 + 0.05, d: Math.random() * Math.PI * 2,
+      g: Math.random() < 0.24 ? 1 : 0
+    }));
+  };
+  resize();
+  addEventListener("resize", resize);
+  if (!reduce) {
+    const draw = t => {
+      ctx.clearRect(0, 0, W, H);
+      for (const m of motes) {
+        m.y -= m.s; m.d += 0.008;
+        if (m.y < -6) { m.y = H + 6; m.x = Math.random() * W; }
+        const tw = 0.32 + 0.68 * (0.5 + 0.5 * Math.sin(t * 0.0011 + m.d * 2.4));
+        const x = m.x + Math.sin(m.d) * 15, al = m.a * tw;
+        const c = m.g ? "42,211,198" : "240,217,168";
+        const g = ctx.createRadialGradient(x, m.y, 0, x, m.y, m.r * 7);
+        g.addColorStop(0, `rgba(${c},${al * 0.5})`);
+        g.addColorStop(1, `rgba(${c},0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, m.y, m.r * 7, 0, 6.284); ctx.fill();
+        ctx.fillStyle = `rgba(255,252,244,${al})`;
+        ctx.beginPath(); ctx.arc(x, m.y, m.r, 0, 6.284); ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+  }
+
+  /* ---------------------------------------------- mariposas flotantes en el hero */
+  if (!reduce) {
+    ["assets/mariposa1.png", "assets/mariposa2.png", "assets/mariposa3.png"].forEach((src, i) => {
+      const el = document.createElement("img");
+      el.src = src; el.className = "flutter"; el.alt = "";
+      el.width = 34 + i * 15;
+      const L = 30 + Math.random() * 42, T = 24 + Math.random() * 46;
+      const x0 = Math.random() * Math.max(40, innerWidth - 160);
+      const y0 = 140 + Math.random() * Math.max(80, innerHeight - 400);
+      el.style.left = x0 + "px"; el.style.top = y0 + "px";
+      hero.appendChild(el);
+      const t0 = Math.random() * 6000;
+      (function loop(t) {
+        const k = (t - t0) / 1000;
+        el.style.transform =
+          `translate3d(${Math.sin(k * .22 + i) * L * 2.2}px,${Math.sin(k * .34 + i * 1.7) * T * 2}px,0)` +
+          ` rotate(${Math.sin(k * .5 + i) * 12}deg)`;
+        el.style.opacity = 0.26 + 0.28 * (0.5 + 0.5 * Math.sin(k * .4 + i * 2));
+        requestAnimationFrame(loop);
+      })(t0);
+    });
+  }
+
+  /* ---------------------------------------------- pausa los vídeos fuera de vista */
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) v.play().catch(() => {});
+    else v.pause();
+  }), { threshold: 0.15 });
+  $$("video").forEach(v => vio.observe(v));
+})();
+</script>
+</body>
+</html>
