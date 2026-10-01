@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BETWEEN — La portada que se arma sola</title>
+<meta name="description" content="La portada de Between reconstruida en 13 capas y animada por etapas: la luna aparece, los rayos salen, el marco se dibuja y las letras se componen.">
+<meta property="og:title" content="BETWEEN — La portada que se arma sola">
+<meta property="og:description" content="Revelado en 12 etapas: luna, rayos, marco, figura, mariposas, chispas y tipografía.">
+<meta property="og:image" content="anim2/poster.jpg">
+<meta name="theme-color" content="#05060a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05060a; --gold:#c9922f; --gold-lt:#f0d9a8; --cream:#f2ece0;
+  --muted:#8e8a82; --dim:#5d5a55; --teal:#2ad3c6;
+  --line:rgba(201,146,47,.22); --line-soft:rgba(242,236,224,.09);
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ease:cubic-bezier(.22,.68,.32,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--sans);
+  font-weight:300;line-height:1.75;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#0a0a0a}
+
+.aurora{position:fixed;inset:-20%;z-index:-1;pointer-events:none;opacity:.5;
+  background:
+    radial-gradient(40vw 40vw at 20% 10%,rgba(201,146,47,.15),transparent 62%),
+    radial-gradient(46vw 46vw at 82% 70%,rgba(42,211,198,.08),transparent 64%);
+  filter:blur(28px)}
+.wrap{width:min(100% - 2.5rem,1080px);margin-inline:auto;position:relative;z-index:2}
+
+/* ---------- cabecera ---------- */
+header{padding:2.2rem 0 1rem}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.65rem;font-family:var(--serif);
+  font-size:1.1rem;letter-spacing:.28em}
+.brand svg{width:20px;height:20px;opacity:.85}
+.brand small{display:block;font-family:var(--sans);font-size:.5rem;letter-spacing:.26em;
+  color:var(--muted);margin-top:2px}
+.back{font-size:.72rem;letter-spacing:.16em;color:var(--muted);
+  border:1px solid var(--line-soft);border-radius:2px;padding:.6rem 1rem;transition:.3s}
+.back:hover{color:var(--gold-lt);border-color:var(--gold)}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3.6rem;align-items:center;
+  padding:3rem 0 5.5rem;min-height:calc(100svh - 80px)}
+.kicker{font-size:.64rem;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;
+  display:flex;align-items:center;gap:.7rem;margin-bottom:1.2rem}
+.kicker::before{content:"";width:28px;height:1px;background:var(--gold);opacity:.7}
+h1{margin:0;font-family:var(--serif);font-weight:300;line-height:1.02;
+  font-size:clamp(2.4rem,5.6vw,4.2rem)}
+h1 em{font-style:italic;
+  background:linear-gradient(180deg,#fffdf7,var(--gold-lt) 70%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin:1.4rem 0 0;color:var(--muted);max-width:46ch;font-size:1rem}
+.facts{display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:2.4rem;padding-top:1.6rem;
+  border-top:1px solid var(--line-soft)}
+.facts div{font-size:.68rem;letter-spacing:.14em;color:var(--dim)}
+.facts b{display:block;color:var(--cream);font-size:.88rem;font-weight:400;
+  letter-spacing:.06em;margin-top:.25rem}
+
+.player{position:relative;justify-self:center;width:min(330px,80vw)}
+.player::before{content:"";position:absolute;inset:-14% -16%;z-index:-1;
+  background:radial-gradient(closest-side,rgba(240,217,168,.26),rgba(201,146,47,.08) 46%,transparent 72%);
+  filter:blur(38px);animation:hb 7s ease-in-out infinite}
+@keyframes hb{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+.screen{position:relative;border-radius:10px;overflow:hidden;
+  box-shadow:0 40px 90px rgba(0,0,0,.75),0 0 0 1px rgba(242,236,224,.10)}
+.screen video{width:100%;display:block;background:#000}
+.chips{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:5px;justify-content:center}
+.chips button{flex:1;padding:.45rem 0;font-size:.58rem;letter-spacing:.1em;
+  background:rgba(6,7,11,.72);backdrop-filter:blur(6px);border:1px solid var(--line-soft);
+  border-radius:3px;color:var(--muted);cursor:pointer;transition:.25s}
+.chips button.on{color:#0a0a0a;background:var(--gold-lt);border-color:var(--gold-lt)}
+.playbar{display:flex;align-items:center;gap:.9rem;margin-top:1rem}
+.playbar button{width:38px;height:38px;border-radius:50%;border:1px solid var(--gold);
+  background:rgba(9,10,15,.8);color:var(--gold-lt);cursor:pointer;display:grid;place-items:center;
+  flex:0 0 auto;transition:.25s}
+.playbar button:hover{background:var(--gold);color:#0a0a0a}
+.track{flex:1;height:3px;background:var(--line-soft);border-radius:2px;position:relative;
+  cursor:pointer}
+.track i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-lt));
+  border-radius:2px}
+.track b{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
+  background:var(--gold-lt);transform:translate(-50%,-50%);left:0;box-shadow:0 0 10px rgba(240,217,168,.6)}
+.tcode{font-size:.7rem;color:var(--dim);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+
+/* ---------- secciones ---------- */
+section{padding:clamp(4rem,9vw,7.5rem) 0}
+h2{font-family:var(--serif);font-weight:300;font-size:clamp(1.8rem,4vw,2.9rem);
+  line-height:1.14;margin:0 0 1.2rem}
+h2 em{font-style:italic;color:var(--gold-lt)}
+
+/* timeline */
+.tl{border-top:1px solid var(--line-soft);margin-top:2.6rem}
+.tl-row{display:grid;grid-template-columns:88px 1fr;gap:1.6rem;padding:1.05rem 0;
+  border-bottom:1px solid var(--line-soft);align-items:baseline}
+.tl-row .t{font-size:.74rem;color:var(--gold);letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.tl-row .n{font-family:var(--serif);font-size:1.3rem;letter-spacing:.03em}
+.tl-row .d{color:var(--muted);font-size:.86rem;margin-top:.15rem}
+.tl-row:hover .n{color:var(--gold-lt)}
+
+/* descarga */
+.dl{display:grid;gap:.8rem;margin-top:2.2rem}
+.dl a{display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:1rem 1.4rem;background:rgba(255,255,255,.022);border:1px solid var(--line-soft);
+  border-radius:3px;transition:.35s var(--ease)}
+.dl a:hover{border-color:var(--gold);background:rgba(201,146,47,.07);transform:translateX(4px)}
+.dl .l{font-size:.9rem}
+.dl .l small{display:block;color:var(--dim);font-size:.72rem;margin-top:.15rem}
+.dl .r{color:var(--gold);font-size:.74rem;letter-spacing:.1em;white-space:nowrap}
+
+/* como se hizo */
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;
+  background:var(--line-soft);border:1px solid var(--line-soft);margin-top:2.6rem}
+.how div{background:var(--ink);padding:1.8rem 1.5rem}
+.how .n{font-family:var(--serif);color:var(--gold);letter-spacing:.2em;font-size:1rem;margin-bottom:.5rem}
+.how h4{margin:0 0 .4rem;font-family:var(--serif);font-weight:400;font-size:1.2rem;letter-spacing:.04em}
+.how p{margin:0;color:var(--muted);font-size:.85rem}
+
+footer{padding:3.4rem 0 2.4rem;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
+  font-size:.7rem;color:var(--dim);letter-spacing:.08em}
+
+.rv{opacity:0;transform:translateY(22px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:2.8rem;text-align:center;padding-top:2rem}
+  .lead{margin-inline:auto}
+  .facts{justify-content:center}
+  .player{order:-1}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="aurora"></div>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+        <circle cx="12" cy="12" r="8.4"/><path d="M12 3.6v16.8M3.6 12h16.8"/></svg>
+      <span>BETWEEN<small>KARLA VILLANUEVA</small></span>
+    </div>
+    <a class="back" href="index.html">&larr; Volver a la portada</a>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div>
+    <div class="kicker">Motion · 2026</div>
+    <h1>La portada que<br><em>se arma sola</em></h1>
+    <p class="lead">La imagen original se desmontó en trece capas independientes y se
+      reanimó por etapas: nada aparece de golpe. La luna enciende, los rayos salen,
+      el marco se dibuja de arriba abajo, la figura emerge, las mariposas vuelan
+      y, al final, las letras se componen.</p>
+    <div class="facts">
+      <div>Formato<b>9:16 vertical</b></div>
+      <div>Duración<b>15 s en bucle</b></div>
+      <div>Capas<b>13</b></div>
+      <div>Etapas<b>12</b></div>
+    </div>
+  </div>
+
+  <div class="player">
+    <div class="screen">
+      <video id="v" autoplay muted loop playsinline preload="metadata" poster="anim2/poster.jpg">
+        <source src="anim2/BETWEEN_buildup_web.mp4" type="video/mp4">
+      </video>
+      <div class="chips">
+        <button data-src="anim2/BETWEEN_buildup_web.mp4"  class="on">Web 720p</button>
+        <button data-src="anim2/BETWEEN_buildup_story.mp4">Story 540p</button>
+        <button data-src="anim2/BETWEEN_buildup.mp4">Alta 1080p</button>
+      </div>
+    </div>
+    <div class="playbar">
+      <button id="pp" aria-label="Reproducir o pausar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+      </button>
+      <div class="track" id="tr"><i></i><b></b></div>
+      <span class="tcode" id="tc">0.0 / 15.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TIMELINE ================= -->
+<section>
+  <div class="wrap">
+    <div class="kicker rv">La secuencia</div>
+    <h2 class="rv d1">Doce etapas, <em>en orden</em></h2>
+    <div class="tl rv d2" id="tl">
+      <div class="tl-row"><span class="t">0.0 – 1.1 s</span>
+        <div><div class="n">Primera luz</div><div class="d">Un resplandor tenue rompe la oscuridad: el fondo respira.</div></div></div>
+      <div class="tl-row"><span class="t">0.6 – 2.1 s</span>
+        <div><div class="n">La luna aparece</div><div class="d">El disco crece desde el centro y toma su sitio exacto en el encuadre.</div></div></div>
+      <div class="tl-row"><span class="t">1.4 – 3.3 s</span>
+        <div><div class="n">Los rayon salen</div><div class="d">Una ráfaga radial recorre el patrón angular medido en la imagen.</div></div></div>
+      <div class="tl-row"><span class="t">1.9 – 3.6 s</span>
+        <div><div class="n">El halo se abre</div><div class="d">La luz difusa inunda el entorno y separa la luna del fondo.</div></div></div>
+      <div class="tl-row"><span class="t">2.7 – 5.1 s</span>
+        <div><div class="n">El marco se dibuja</div><div class="d">Un frente luminoso desciende de arriba abajo trazando la enrejada dorada.</div></div></div>
+      <div class="tl-row"><span class="t">4.3 – 6.4 s</span>
+        <div><div class="n">La figura emerge</div><div class="d">Chica y vestido suben desde abajo; el turquesa recibe un barrido de luz.</div></div></div>
+      <div class="tl-row"><span class="t">5.7 – 7.8 s</span>
+        <div><div class="n">Las mariposas</div><div class="d">Once mariposas entran volando, cada una con su fase y su rumbo.</div></div></div>
+      <div class="tl-row"><span class="t">6.9 – 8.6 s</span>
+        <div><div class="d" style="color:var(--gold-lt)">130 chispas se encienden una a una y empiezan a parpadear.</div></div></div>
+      <div class="tl-row"><span class="t">7.8 – 10.4 s</span>
+        <div><div class="n">Las letras</div><div class="d">El título se compone con un barrido cuyo frente va dejando un halo dorado.</div></div></div>
+      <div class="tl-row"><span class="t">10.1 – 12.6 s</span>
+        <div><div class="d">Rombo, firma de la autora y logotipo se asientan en cascada.</div></div></div>
+      <div class="tl-row"><span class="t">12.6 – 14.1 s</span>
+        <div><div class="n">Todo respira</div><div class="d">La luna late con dos armónicos, los rayos rotan y las chispas titilan.</div></div></div>
+      <div class="tl-row"><span class="t">14.1 – 15.0 s</span>
+        <div><div class="d">Fundido a negro para cerrar el bucle sin corte.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DESCARGAS ================= -->
+<section>
+  <div class="wrap">
+    <div class="kicker rv">Descargas</div>
+    <h2 class="rv d1">El vídeo, <em>en tres pesos</em></h2>
+    <p class="lead rv d2" style="margin:0">Los tres tienen los mismos 15 segundos. Elige
+      según dónde va a verse.</p>
+    <div class="dl rv d3">
+      <a href="anim2/BETWEEN_buildup.mp4" download>
+        <span class="l">Alta calidad — 1080 × 1920<small>crf 18, para archival y redes con margen</small></span>
+        <span class="r">41 MB</span></a>
+      <a href="anim2/BETWEEN_buildup_web.mp4" download>
+        <span class="l">Web — 720 × 1280<small>crf 26, el que usa esta página</small></span>
+        <span class="r">815 KB</span></a>
+      <a href="anim2/BETWEEN_buildup_story.mp4" download>
+        <span class="l">Historia — 540 × 960<small>crf 29, para WhatsApp y stories</small></span>
+        <span class="r">384 KB</span></a>
+      <a href="anim2/poster.jpg" download>
+        <span class="l">Póster — JPG<small>Fotograma final, 1080 × 1920</small></span>
+        <span class="r">399 KB</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMO SE HIZO ================= -->
+<section>
+  <div class="wrap">
+    <div class="kicker rv">Bajo el capó</div>
+    <h2 class="rv d1">Cuatro decisiones <em>que importan</em></h2>
+    <div class="how">
+      <div class="rv"><div class="n">I</div><h4>Desmontar</h4>
+        <p>La portada se separó en trece PNG con alfa. Nada es un recorte: cada capa
+          es reutilizable y animable por separado.</p></div>
+      <div class="rv d1"><div class="n">II</div><h4>Componer en vertical</h4>
+        <p>1080 × 1920 deja a la luna el tercio superior y deja a las letras un
+          bloque de negro limpio donde se leen sin esfuerzo.</p></div>
+      <div class="rv d2"><div class="n">III</div><h4>Medir los rayos</h4>
+        <p>El patrón radial no se dibujó a ojo: se muestreó la imagen en 1440
+          ángulos y se reconstruyó como perfil, por eso puede rotar de verdad.</p></div>
+      <div class="rv d3"><div class="n">IV</div><h4>Tipografía aparte</h4>
+        <p>El título se extrajo como textura propia y se compuso aparte del arte,
+          en espacio negro y con un tamaño mayor que en el original.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>BETWEEN · Karla Villanueva · D'McPherson</span>
+  <span><a href="index.html">Portada</a> &nbsp;·&nbsp; <a href="capas.html">Las 13 capas</a></span>
+</footer>
+
+<script>
+(() => {
+  const v = document.getElementById("v");
+  const pp = document.getElementById("pp");
+  const tr = document.getElementById("tr");
+  const fill = tr.querySelector("i");
+  const knob = tr.querySelector("b");
+  const tc = document.getElementById("tc");
+  const PLAY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
+  const PAUSE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>';
+
+  pp.addEventListener("click", () => {
+    if (v.paused) { v.play().catch(() => {}); pp.innerHTML = PAUSE; }
+    else { v.pause(); pp.innerHTML = PLAY; }
+  });
+  v.addEventListener("play", () => { pp.innerHTML = PAUSE; });
+  v.addEventListener("pause", () => { pp.innerHTML = PLAY; });
+
+  const seek = e => {
+    const r = tr.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) / r.width));
+    v.currentTime = p * (v.duration || 15);
+  };
+  let dragging = false;
+  tr.addEventListener("pointerdown", e => { dragging = true; seek(e); });
+  tr.addEventListener("pointermove", e => { if (dragging) seek(e); });
+  addEventListener("pointerup", () => { dragging = false; });
+  tr.addEventListener("click", seek);
+
+  v.addEventListener("timeupdate", () => {
+    const d = v.duration || 15;
+    const p = (v.currentTime / d) * 100;
+    fill.style.width = p + "%";
+    knob.style.left = p + "%";
+    tc.textContent = v.currentTime.toFixed(1) + " / " + d.toFixed(1);
+  });
+
+  // cambia de version al pulsar una etiqueta. Empieza desde el principio:
+  // el bucle son 15 s y siempre estan en el mismo orden.
+  document.querySelectorAll(".chips button").forEach(b => {
+    b.addEventListener("click", () => {
+      if (b.classList.contains("on")) return;
+      document.querySelectorAll(".chips button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      v.src = b.dataset.src;
+      v.load();
+      v.play().catch(() => {});
+    });
+  });
+
+  // reveal
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { threshold: 0.12 });
+  document.querySelectorAll(".rv").forEach(el => io.observe(el));
+
+  // no reproducir dos veces el mismo bloque si esta fuera de vista
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) v.play().catch(() => {});
+    else v.pause();
+  }), { threshold: 0.2 });
+  vio.observe(v);
+})();
+</script>
+</body>
+</html>

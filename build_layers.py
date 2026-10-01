@@ -173,18 +173,29 @@ body = np.where((gc == cv2.GC_FGD) | (gc == cv2.GC_PR_FGD), 1, 0).astype(np.floa
 body = op(body, 9, 1, cv2.MORPH_CLOSE)
 body = op(body, 5, 1, cv2.MORPH_OPEN)
 
-girl = np.clip(cap + body, 0, 1)
-girl = op(girl, 9, 1, cv2.MORPH_CLOSE)
-girl = largest_cc(girl, near=(240, 300))
-girl = fill_small_holes(girl, 900)
-# el relleno absorbio la punta del titulo: quitar solo el blanco puro del interior
-tit_wh = (lum > 0.72) & (sat < 0.16)
-tit_wh[:514, :] = False
-girl = np.clip(girl - tit_wh, 0, 1)
-girl = blur(girl, 0.6)
+girl_raw = np.clip(cap + body, 0, 1)
+girl_raw = op(girl_raw, 9, 1, cv2.MORPH_CLOSE)
+girl_raw = largest_cc(girl_raw, near=(240, 300))
+girl_raw = fill_small_holes(girl_raw, 900)
 
+# El vestido se mide sobre la mascara ANTES de limpiar el titulo: el texto
+# solo se dibuja encima, no forma parte de la prenda.
 teal = (b > r + 0.04) & (g > r + 0.01) & (sat > 0.45) & (lum > 0.05)
-dress = blur(op((teal & (girl > 0.4)).astype(np.float32), 3, 1, cv2.MORPH_CLOSE), 0.5)
+dress = blur(op((teal & (girl_raw > 0.4)).astype(np.float32), 3, 1, cv2.MORPH_CLOSE), 0.5)
+
+# Limpieza del titulo: se recorta con la mascara real de las letras (dilatada
+# para absorber su halo), no con un rectangulo de banda, que dejaba un corte
+# recto atravesando el vestido.
+girl = girl_raw.copy()
+txt_zone = np.zeros((H, W), np.float32)
+txt_zone[514:598, 72:418] = ((lum > 0.72) & (sat < 0.16))[514:598, 72:418]
+txt_zone = op(txt_zone, 5, 1, cv2.MORPH_CLOSE)
+txt_zone = cv2.dilate(txt_zone, np.ones((7, 7), np.uint8), iterations=2).astype(np.float32)
+girl = np.clip(girl - txt_zone, 0, 1)
+# borde inferior con desvanecido suave (nada de corte recto)
+_yv = np.arange(H, dtype=np.float32)[:, None]
+girl *= np.clip((540.0 - _yv) / 22.0, 0, 1)
+girl = blur(girl, 0.6)
 
 # ================================================================= 05 MARIPOSAS
 bf_col = (lum > 0.55) & (sat < 0.40)

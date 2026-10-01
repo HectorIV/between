@@ -1,0 +1,15 @@
+# fotogramas intermedios: se regeneran con  python build_v2.py --render
+anim2/frames/
+anim/frames/
+_stage/
+
+# archivos temporales de diagnostico
+_*.py
+_*.npy
+_*.png
+*.pyc
+__pycache__/
+
+# salidas intermedias
+anim2/_*.png
+anim2/t*.jpg
