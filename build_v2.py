@@ -213,6 +213,62 @@ HOLD_END = 14.10               # hasta aqui queda respirando
 FADE = (14.10, 15.00)          # y se apaga para volver a empezar
 
 
+# ---------------------------------------------- rayos anchos (profundidad)
+_WIDE = cv2.GaussianBlur(ray_prof.reshape(1, -1), (0, 0), 9).ravel()
+
+
+def wide_rays(t, p):
+    """Segunda capa de luz: mas ancha, mas lenta y mas difusa que los
+    rayos finos. Es lo que da profundidad al haz."""
+    if t < ST["rays"][0]:
+        return None
+    prof = np.roll(_WIDE, int(-t * 3.0))
+    rad = (np.clip((dl - R_MOON * 0.55) / 70.0, 0, 1) *
+           np.clip((360.0 - dl) / 230.0, 0, 1) ** 1.3)
+    a = np.clip(prof[ai] * rad, 0, 1)
+    a = cv2.GaussianBlur(a, (0, 0), 16)
+    a *= (0.62 + 0.38 * np.sin(p * 2 + 2.0))
+    return a * 0.34
+
+
+# ---------------------------------------------- motas de polvo
+def _make_motes():
+    rng = np.random.default_rng(11)
+    return [dict(x=rng.random() * CW, y=rng.random() * CH,
+                 r=rng.random() * 1.9 + 1.0,
+                 sp=rng.random() * 15.0 + 5.0,
+                 ph=rng.uniform(0, 6.283),
+                 drift=rng.uniform(-11, 11),
+                 cool=rng.random() < 0.26) for _ in range(56)]
+
+
+MOTES = _make_motes()
+
+
+def draw_motes(img, t, p):
+    """Polvo suspendido: solo se ve dentro del haz, por eso resulta creible."""
+    for m in MOTES:
+        y = (m["y"] - t * m["sp"]) % (CH + 90.0) - 45.0
+        x = m["x"] + np.sin(p * m["sp"] * 0.11 + m["ph"]) * m["drift"]
+        d = np.hypot(x - MX, y - MY)
+        lit = np.clip(1.0 - d / (R_MOON * 3.4), 0, 1) ** 1.6
+        tw = 0.5 + 0.5 * np.sin(p * 1.7 + m["ph"])
+        a = lit * (0.14 + 0.52 * tw)
+        if a < 0.012:
+            continue
+        col = (0.52, 0.92, 0.90) if m["cool"] else (1.0, 0.93, 0.78)
+        r = int(m["r"] * 2) + 2
+        cx, cy = int(x), int(y)
+        x0, y0 = max(0, cx - r), max(0, cy - r)
+        x1, y1 = min(CW, cx + r + 1), min(CH, cy + r + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        gy, gx = np.mgrid[y0 - (cy - r):y1 - (cy - r), x0 - (cx - r):x1 - (cx - r)]
+        g = np.exp(-(gx ** 2 + gy ** 2) / (2.0 * (m["r"] * 1.5) ** 2))
+        img[y0:y1, x0:x1] += np.array(col, np.float32) * (g * a * 0.5)[..., None]
+    return img
+
+
 def ease(t):
     t = min(1.0, max(0.0, t))
     return t * t * (3 - 2 * t)          # smoothstep
@@ -272,6 +328,74 @@ def comp(img, rgb, alpha, canvas_mask, blur=0.6, gain=1.0, boost=None):
 R_MOON = 127.0 * S             # radio de la luna en el lienzo
 
 
+# ======================================================= LUNA MEJORADA
+# Todo se precalcula a baja resolucion y se reescala: el coste por
+# fotograma se mantiene bajo.
+_SW = CW // 3
+_SH = CH // 3
+_sx, _sy = _SW / CW, _SH / CH
+
+
+def _make_surface():
+    """Maria lunares: ruido suave normalizado, con algo de craterizado."""
+    rng = np.random.default_rng(3)
+    n = _SW
+    z = rng.random((n, n)).astype(np.float32)
+    z = cv2.GaussianBlur(z, (0, 0), n * 0.045)
+    z = (z - z.min()) / max(z.max() - z.min(), 1e-6)
+    z = cv2.GaussianBlur(z, (0, 0), n * 0.022)
+    # normalizar alrededor de 0.5 para modular sin oscurecer de mas
+    z = 0.5 + (z - 0.5) * 0.9
+    return np.clip(z, 0, 1).astype(np.float32)
+
+
+MOON_SURFACE = _make_surface()
+
+
+def moon_surface_rot(t):
+    """Gira la textura muy despacio (una vuelta cada ~95 s)."""
+    deg = (t * 3.8) % 360.0
+    M = cv2.getRotationMatrix2D((MX * _sx, MY * _sy), deg, 1.0)
+    return cv2.warpAffine(MOON_SURFACE, M, (_SW, _SH),
+                          flags=cv2.INTER_LINEAR,
+                          borderMode=cv2.BORDER_REFLECT)
+
+
+def moon_clouds(t):
+    """Banda de nube suave cruzando el disco, en diagonal."""
+    a = np.deg2rad(-24.0)
+    ca, sa = np.cos(a), np.sin(a)
+    proj = (XX - MX) * ca + (YY - MY) * sa          # coordenada de la banda
+    span = R_MOON * 1.9
+    pos = span * (0.62 * np.sin(2 * np.pi * t / 26.0) - 0.10)
+    band = np.exp(-((proj - pos) ** 2) / (2 * (R_MOON * 0.42) ** 2))
+    # segunda nube mas fina y lenta, para que no se lea como una sola
+    pos2 = span * (0.55 * np.sin(2 * np.pi * t / 41.0 + 2.1))
+    band += 0.55 * np.exp(-((proj - pos2) ** 2) / (2 * (R_MOON * 0.24) ** 2))
+    return np.clip(band, 0, 1.35)
+
+
+def moon_limb():
+    """Anillo calido en el borde del disco."""
+    w = R_MOON * 0.045
+    return np.exp(-((dl - R_MOON) ** 2) / (2 * w * w))
+
+
+def moon_ripples(t, mg):
+    """Ondas concentricas que salen del disco mientras aparece."""
+    out = np.zeros_like(dl)
+    if mg <= 0 or mg >= 1:
+        return out
+    for k in range(3):
+        ph = mg * 1.35 - k * 0.17
+        if ph <= 0 or ph >= 1:
+            continue
+        rr = R_MOON * (0.92 + 0.62 * ph)
+        w = R_MOON * (0.020 + 0.030 * ph)
+        out += np.exp(-((dl - rr) ** 2) / (2 * w * w)) * (1 - ph) ** 1.4
+    return out
+
+
 def build_frame(t, first=False):
     p = 2 * np.pi * t
     img = np.zeros((CH, CW, 3), np.float32)
@@ -283,15 +407,50 @@ def build_frame(t, first=False):
         amb = np.clip(1 - dl / 1500.0, 0, 1) ** 2.2 * g * 0.5
         img += np.array([0.10, 0.07, 0.04], np.float32)[None, None, :] * amb[..., None]
 
-    # ---------- 2) luna: escala + opacidad
+    # ---------- 2) luna: textura, nubes, limbo, ondas y respiracion
     mg = prog(t, "moon")
     if mg > 0:
         ease_m = ease(mg)
+        # respiracion: dos armonicos, como antes pero algo mas perceptible
         breath = 1.0 + 0.020 * np.sin(p * 2) + 0.009 * np.sin(p * 3 + 1.1)
         sc = (0.72 + 0.28 * ease_m) * breath
-        # recorte circular del disco reescalado
-        scale_mask = np.clip((R_MOON * sc - dl) / (2.6 * sc) + 0.5, 0, 1) * mg
-        comp(img, moon_r, moon_a, scale_mask, 0.6)
+        R = R_MOON * sc
+
+        # viraje termico: la luna vira a calido al inspirar y a frio al espirar
+        warm = 0.5 + 0.5 * np.sin(p * 2 + 0.6)
+        # base por debajo de 1 para que el relieve y las nubes no se quemen
+        body = np.array([0.94, 0.925 - 0.030 * (1 - warm), 0.885 - 0.070 * (1 - warm)],
+                        np.float32)
+
+        disc = np.clip((R - dl) / (2.4 * sc) + 0.5, 0, 1) * mg
+        disc = cv2.GaussianBlur(disc, (0, 0), 0.6)
+
+        # relieve lunar: las maria OSCURECEN mas de lo que aclaran, que es
+        # como se lee de verdad una luna llena
+        surf = cv2.resize(moon_surface_rot(t), (CW, CH), interpolation=cv2.INTER_LINEAR)
+        relief = (0.62 + 0.46 * surf) * disc
+
+        # nube: oscurece un punto del disco
+        cloud = 1.0 - moon_clouds(t) * 0.26 * disc
+        shade = relief * cloud
+
+        # el limbo calido vive justo en el borde del disco
+        limb = moon_limb() * disc * (0.55 + 0.45 * warm)
+
+        reg = np.zeros((CH, CW), np.float32)
+        hh, ww = moon_a.shape
+        reg[max(0, DY):min(CH, DY + hh), max(0, DX):min(CW, DX + ww)] = 1.0
+
+        lit = body[None, None, :] * shade[..., None] * disc[..., None]
+        lit[..., 0] += limb * 0.30
+        lit[..., 1] += limb * 0.20
+        lit[..., 2] += limb * 0.09
+        a = np.clip(disc * reg, 0, 1)
+        img = img * (1 - a[..., None]) + np.clip(lit, 0, 1) * a[..., None]
+
+        # ondas de nacimiento, por encima del disco
+        rip = moon_ripples(t, mg) * np.clip(1 - mg * 0.55, 0, 1)
+        img += np.array([1.00, 0.92, 0.76], np.float32)[None, None, :] * rip[..., None] * 0.42
 
     # ---------- 3) rayos: burst radial + rotacion
     rg = prog(t, "rays")
@@ -305,6 +464,10 @@ def build_frame(t, first=False):
         ra *= (0.72 + 0.32 * np.sin(p * 2 + 0.9))
         ra = np.clip(ra, 0, 1)
         img += np.array([1.0, 0.94, 0.80], np.float32)[None, None, :] * ra[..., None]
+
+        wr = wide_rays(t, p)
+        if wr is not None:
+            img += np.array([1.00, 0.90, 0.72], np.float32)[None, None, :] * wr[..., None]
 
     # ---------- 4) halo
     hg = prog(t, "halo")
@@ -415,6 +578,10 @@ def build_frame(t, first=False):
     if t >= ST["logo"][0]:
         stamp(img, T_log, T_loga, MX, LOGO_Y, 1.70, prog(t, "logo"))
 
+    # ---------- polvo en la luz
+    if t > ST["spark"][0] - 1.0:
+        img = draw_motes(img, t, p)
+
     # ---------- post
     return post(img, t, p)
 
@@ -433,12 +600,14 @@ def _over(dst, rgb, a, x, y, opacity=1.0):
 
 def post(img, t, p):
     img = np.clip(img, 0, None)
-    # bloom barato: en baja resolucion y de vuelta
+    # bloom barato: en baja resolucion y de vuelta.
+    # Umbral alto y fuerza contenida: si no, el nucleo de la luna se
+    # satura y se pierde el relieve lunar.
     lum = 0.299 * img[..., 0] + 0.587 * img[..., 1] + 0.114 * img[..., 2]
-    small = cv2.resize(np.clip(lum - 0.70, 0, None), (CW // 6, CH // 6),
+    small = cv2.resize(np.clip(lum - 0.82, 0, None), (CW // 6, CH // 6),
                        interpolation=cv2.INTER_AREA)
     small = cv2.GaussianBlur(small, (0, 0), 5)
-    bloom = cv2.resize(small, (CW, CH), interpolation=cv2.INTER_LINEAR) * 1.9
+    bloom = cv2.resize(small, (CW, CH), interpolation=cv2.INTER_LINEAR) * 1.45
     img += bloom[..., None] * np.array([1.0, 0.93, 0.80], np.float32)
 
     # vineta
