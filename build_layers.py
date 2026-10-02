@@ -192,10 +192,24 @@ txt_zone[514:598, 72:418] = ((lum > 0.72) & (sat < 0.16))[514:598, 72:418]
 txt_zone = op(txt_zone, 5, 1, cv2.MORPH_CLOSE)
 txt_zone = cv2.dilate(txt_zone, np.ones((7, 7), np.uint8), iterations=2).astype(np.float32)
 girl = np.clip(girl - txt_zone, 0, 1)
-# borde inferior con desvanecido suave (nada de corte recto)
+
+# La punta del vestido quedo mordida por el recorte del titulo. La capa de
+# vestido se midio ANTES de limpiar, asi que la union devuelve esa parte
+# intacta y el vestido vuelve a estar completo.
+girl = np.clip(np.maximum(girl, dress), 0, 1)
+
+# Bajo y=522 el titulo se imprimio ENCIMA del faldon. Al separar las capas,
+# esa punta no existe: ahi los pixeles son letra sobre tela y no hay forma de
+# recuperar el vestido que quedo debajo. Se intento reconstruirla dos veces
+# (prolongando la silueta, y rellenando de color) y las dos dejaron un bloque
+# rectangular que se veia mas que el corte original.
+# Lo que si funciona: que el faldon se disuelva despacio en la penumbra, como
+# hace de verdad una falda que se pierde en la oscuridad.
 _yv = np.arange(H, dtype=np.float32)[:, None]
-girl *= np.clip((540.0 - _yv) / 22.0, 0, 1)
+girl *= np.clip((534.0 - _yv) / 32.0, 0, 1) ** 0.8
 girl = blur(girl, 0.6)
+
+girl_rgb = A[..., :3]
 
 # ================================================================= 05 MARIPOSAS
 bf_col = (lum > 0.55) & (sat < 0.40)
@@ -255,7 +269,7 @@ for nm, c, a in [
     ("03_luna",             moon_rgb, moon_a),
     ("04_marco_ornamental", A,        m_frame),
     ("05_mariposas",        white,    bf),
-    ("06_chica",            A,        girl),
+    ("06_chica",            girl_rgb, girl),
     ("07_vestido_turquesa", A,        dress),
     ("08_chispas",          white,    spark),
     ("09_titulo_between",   white,    m_titulo),

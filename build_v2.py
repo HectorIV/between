@@ -43,10 +43,17 @@ def scaled(n):
 
 
 def tex(n):
+    """Textura de una capa de texto, recortada a su bbox y con el alfa
+    enderezado: la fuente original es de 65 px de alto y al ampliarla
+    2.3x se emborrona. El unsharp sobre el alfa devuelve el filo."""
     rgb, a = load(n)
     ys, xs = np.nonzero(a > 0.02)
-    return rgb[ys.min():ys.max() + 1, xs.min():xs.max() + 1], \
-        a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    a = a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    rgb = rgb[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    blur = cv2.GaussianBlur(a, (0, 0), 2.6)
+    sharp = np.clip(a + (a - blur) * 2.1, 0, 1)
+    a = np.maximum(a * 0.55, sharp)
+    return rgb, a
 
 
 print("cargando capas...")
@@ -213,6 +220,66 @@ HOLD_END = 14.10               # hasta aqui queda respirando
 FADE = (14.10, 15.00)          # y se apaga para volver a empezar
 
 
+# ---------------------------------------------- nieve
+# Tres profundidades: la cercana grande y desenfocada hace de bokeh, la
+# lejana es diminuta y nitida. Sin la profundidad, la nieve lee como ruido.
+def _make_snow():
+    rng = np.random.default_rng(23)
+    out = []
+    # (cantidad, radio min, radio max, velocidad, alfa, desenfoque)
+    capas = [(34, 4.2, 8.5, 118.0, 0.30, 3.2),
+             (70, 2.0, 4.0, 78.0, 0.52, 1.5),
+             (130, 0.9, 2.0, 44.0, 0.72, 0.0)]
+    for n, r0, r1, sp, al, bl in capas:
+        for _ in range(n):
+            out.append(dict(x=rng.random() * CW, y=rng.random() * CH,
+                            r=rng.uniform(r0, r1), sp=sp * rng.uniform(0.75, 1.25),
+                            ph=rng.uniform(0, 6.283),
+                            drift=rng.uniform(-26, 26),
+                            sway=rng.uniform(14, 34),
+                            al=al * rng.uniform(0.6, 1.0), bl=bl))
+    return out
+
+
+SNOW = _make_snow()
+SNOW_COL = np.array([0.88, 0.94, 1.00], np.float32)
+
+
+def draw_snow(img, t, p):
+    """Nieve cayendo. El copo se dibuja con un nucleo y tres brazos a 60
+    grados, para que se lea como copo y no como punto."""
+    for f in SNOW:
+        y = (f["y"] + t * f["sp"]) % (CH + 120.0) - 60.0
+        x = f["x"] + np.sin(p * 0.30 + f["ph"]) * f["sway"]
+        r = f["r"]
+        cx, cy = int(x), int(y)
+        pad = int(r * 2.6)
+        x0, y0 = max(0, cx - pad), max(0, cy - pad)
+        x1, y1 = min(CW, cx + pad + 1), min(CH, cy + pad + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        gy, gx = np.mgrid[y0 - (cy - pad):y1 - (cy - pad),
+                          x0 - (cx - pad):x1 - (cx - pad)]
+        dx = gx - (cx - (cx - pad))
+        dy = gy - (cy - (cy - pad))
+        d = np.sqrt(gx ** 2 + gy ** 2)
+        a = np.exp(-(d ** 2) / (2.0 * (r * 0.62) ** 2))       # nucleo
+        # brazos: tres lineas a 60 grados, finas
+        for k in range(3):
+            th = k * np.pi / 3.0 + f["ph"]
+            arm = np.abs(dx * np.sin(th) - dy * np.cos(th))
+            along = dx * np.cos(th) + dy * np.sin(th)
+            a = np.maximum(a, np.exp(-(arm ** 2) / (2.0 * (r * 0.22) ** 2))
+                           * (along > 0) * np.exp(-(along ** 2) / (2.0 * (r * 1.5) ** 2)) * 0.55)
+        a = np.clip(a, 0, 1) * f["al"]
+        if a.max() < 0.02:
+            continue
+        if f["bl"] > 0.3:      # copo cercano: fuera de foco
+            a = cv2.GaussianBlur(a, (0, 0), f["bl"])
+        img[y0:y1, x0:x1] += SNOW_COL[None, None, :] * (a * 0.85)[..., None]
+    return img
+
+
 # ---------------------------------------------- rayos anchos (profundidad)
 _WIDE = cv2.GaussianBlur(ray_prof.reshape(1, -1), (0, 0), 9).ravel()
 
@@ -230,43 +297,6 @@ def wide_rays(t, p):
     a *= (0.62 + 0.38 * np.sin(p * 2 + 2.0))
     return a * 0.34
 
-
-# ---------------------------------------------- motas de polvo
-def _make_motes():
-    rng = np.random.default_rng(11)
-    return [dict(x=rng.random() * CW, y=rng.random() * CH,
-                 r=rng.random() * 1.9 + 1.0,
-                 sp=rng.random() * 15.0 + 5.0,
-                 ph=rng.uniform(0, 6.283),
-                 drift=rng.uniform(-11, 11),
-                 cool=rng.random() < 0.26) for _ in range(56)]
-
-
-MOTES = _make_motes()
-
-
-def draw_motes(img, t, p):
-    """Polvo suspendido: solo se ve dentro del haz, por eso resulta creible."""
-    for m in MOTES:
-        y = (m["y"] - t * m["sp"]) % (CH + 90.0) - 45.0
-        x = m["x"] + np.sin(p * m["sp"] * 0.11 + m["ph"]) * m["drift"]
-        d = np.hypot(x - MX, y - MY)
-        lit = np.clip(1.0 - d / (R_MOON * 3.4), 0, 1) ** 1.6
-        tw = 0.5 + 0.5 * np.sin(p * 1.7 + m["ph"])
-        a = lit * (0.14 + 0.52 * tw)
-        if a < 0.012:
-            continue
-        col = (0.52, 0.92, 0.90) if m["cool"] else (1.0, 0.93, 0.78)
-        r = int(m["r"] * 2) + 2
-        cx, cy = int(x), int(y)
-        x0, y0 = max(0, cx - r), max(0, cy - r)
-        x1, y1 = min(CW, cx + r + 1), min(CH, cy + r + 1)
-        if x1 <= x0 or y1 <= y0:
-            continue
-        gy, gx = np.mgrid[y0 - (cy - r):y1 - (cy - r), x0 - (cx - r):x1 - (cx - r)]
-        g = np.exp(-(gx ** 2 + gy ** 2) / (2.0 * (m["r"] * 1.5) ** 2))
-        img[y0:y1, x0:x1] += np.array(col, np.float32) * (g * a * 0.5)[..., None]
-    return img
 
 
 def ease(t):
@@ -412,14 +442,14 @@ def build_frame(t, first=False):
     if mg > 0:
         ease_m = ease(mg)
         # respiracion: dos armonicos, como antes pero algo mas perceptible
-        breath = 1.0 + 0.020 * np.sin(p * 2) + 0.009 * np.sin(p * 3 + 1.1)
+        breath = 1.0 + 0.0065 * np.sin(p * 2) + 0.0030 * np.sin(p * 3 + 1.1)
         sc = (0.72 + 0.28 * ease_m) * breath
         R = R_MOON * sc
 
         # viraje termico: la luna vira a calido al inspirar y a frio al espirar
         warm = 0.5 + 0.5 * np.sin(p * 2 + 0.6)
         # base por debajo de 1 para que el relieve y las nubes no se quemen
-        body = np.array([0.94, 0.925 - 0.030 * (1 - warm), 0.885 - 0.070 * (1 - warm)],
+        body = np.array([0.945, 0.930 - 0.010 * (1 - warm), 0.905 - 0.026 * (1 - warm)],
                         np.float32)
 
         disc = np.clip((R - dl) / (2.4 * sc) + 0.5, 0, 1) * mg
@@ -435,7 +465,7 @@ def build_frame(t, first=False):
         shade = relief * cloud
 
         # el limbo calido vive justo en el borde del disco
-        limb = moon_limb() * disc * (0.55 + 0.45 * warm)
+        limb = moon_limb() * disc * (0.74 + 0.26 * warm)
 
         reg = np.zeros((CH, CW), np.float32)
         hh, ww = moon_a.shape
@@ -461,7 +491,7 @@ def build_frame(t, first=False):
               np.clip((reach - dl) / 90.0, 0, 1)
         ra = np.clip(rot[ai] * rad, 0, 1) ** 0.8
         ra = cv2.GaussianBlur(ra, (0, 0), 1.2)
-        ra *= (0.72 + 0.32 * np.sin(p * 2 + 0.9))
+        ra *= (0.84 + 0.17 * np.sin(p * 2 + 0.9))
         ra = np.clip(ra, 0, 1)
         img += np.array([1.0, 0.94, 0.80], np.float32)[None, None, :] * ra[..., None]
 
@@ -474,7 +504,7 @@ def build_frame(t, first=False):
     if hg > 0:
         ha = np.clip(halo_prof[ai] * np.clip((1580 - dl) / 1300.0, 0, 1) ** 2.0, 0, 1)
         ha = cv2.GaussianBlur(ha, (0, 0), 26 * S) * 0.80 * hg
-        ha *= (0.85 + 0.20 * np.sin(p * 2 + 0.4))
+        ha *= (0.93 + 0.09 * np.sin(p * 2 + 0.4))
         img += np.array([1.0, 0.86, 0.62], np.float32)[None, None, :] * np.clip(ha, 0, 1)[..., None]
 
     # ---------- 5) marco: barrido vertical de arriba abajo
@@ -511,27 +541,8 @@ def build_frame(t, first=False):
         comp(img, girl_r, girl_a, wipe, 0.6)
         comp(img, dress_r, dress_a, wipe, 0.6, boost=0.5 * sweep)
 
-    # ---------- 7) mariposas
-    for bf in butterflies:
-        k = prog(t, "butterfly")
-        if k <= 0:
-            continue
-        # cada una entra con retardo propio segun su indice
-        d = (bf["cx"] / CW)
-        kb = ease(min(1.0, max(0.0, (k - d * 0.45) / 0.55)))
-        if kb <= 0.01:
-            continue
-        sy = 1.0 + 0.13 * np.sin(p * bf["sp"] * 4 + bf["ph"])
-        sx = abs(np.cos(p * bf["sp"] * 2 + bf["ph"])) * 0.55 + 0.45
-        nh, nw = bf["h"], max(2, int(bf["w"] * sx))
-        aa = cv2.resize(bf["a"], (nw, nh), interpolation=cv2.INTER_AREA) * kb
-        cc = cv2.resize(bf["rgb"], (nw, nh), interpolation=cv2.INTER_AREA)
-        # entran desde fuera hacia su sitio
-        x = int(bf["cx"] - nw / 2 + bf["dx"] * (1 - kb) +
-                bf["amp"] * 2.0 * np.sin(p * bf["sp"] + bf["ph"]))
-        y = int(bf["cy"] - nh / 2 + bf["dy"] * (1 - kb) +
-                bf["amp"] * 1.6 * np.sin(p * bf["sp"] * 1.4 + bf["ph"] * 1.3))
-        _over(img, cc, aa, x, y, 0.86 + 0.14 * np.sin(p * bf["sp"] * 2 + bf["ph"]))
+    # ---------- 7) las mariposas de la ilustracion se omiten:
+    # son alas estaticas y aletearlas queda falso
 
     # ---------- 8) chispas
     sg = prog(t, "spark")
@@ -555,32 +566,11 @@ def build_frame(t, first=False):
             gg = gf[Y0 - (py_ - r):Y1 - (py_ - r), X0 - (px_ - r):X1 - (px_ - r)]
             img[Y0:Y1, X0:X1] += s["col"][None, None, :] * (gg * k * 0.42)[..., None]
 
-    # ---------- 9) titulo: barrido con borde dorado
-    tg = prog(t, "title")
-    if tg > 0:
-        up = ease(min(1.0, tg * 1.6))
-        stamp_wipe(img, T_tit, T_tita, MX, TITLE_Y + (1 - up) * 26, T_SCALE, tg, 1.0)
-        # borde luminoso en el frente del barrido
-        wpx = T_tita.shape[1] * T_SCALE
-        fx = MX - wpx / 2 + wpx * tg
-        if 0.02 < tg < 0.999:
-            xx2 = XX - fx
-            gl = np.exp(-(xx2 ** 2) / (2 * (13.0) ** 2)) * \
-                 np.clip(1 - np.abs(YY - TITLE_Y) / (T_tita.shape[0] * T_SCALE * 0.62), 0, 1)
-            gl = np.clip(gl, 0, 1) * 0.85
-            img += np.array([1.0, 0.90, 0.68], np.float32)[None, None, :] * gl[..., None]
-
-    # ---------- 10-12) remate
-    if t >= ST["rombo"][0]:
-        stamp(img, T_rom, T_roma, MX, ROM_Y, 1.70, prog(t, "rombo"))
-    if t >= ST["author"][0]:
-        stamp(img, T_aut, T_auta, MX, AUT_Y, 1.75, prog(t, "author"))
-    if t >= ST["logo"][0]:
-        stamp(img, T_log, T_loga, MX, LOGO_Y, 1.70, prog(t, "logo"))
-
-    # ---------- polvo en la luz
-    if t > ST["spark"][0] - 1.0:
-        img = draw_motes(img, t, p)
+    # el texto se compone en post(), DESPUES del bloom y la vineta:
+    # si no, el grano y el bloom le come el filo
+    # ---------- nieve cayendo
+    if t > ST["halo"][0] - 0.5:
+        img = draw_snow(img, t, p)
 
     # ---------- post
     return post(img, t, p)
@@ -610,6 +600,15 @@ def post(img, t, p):
     bloom = cv2.resize(small, (CW, CH), interpolation=cv2.INTER_LINEAR) * 1.45
     img += bloom[..., None] * np.array([1.0, 0.93, 0.80], np.float32)
 
+    # GRADACION DE INVIERNO: el libro ocurre en un clima nevado, asi que
+    # la luz se enfria. El dorado del marco se conserva como acento: es lo
+    # que da contraste calido en una escena de noche helada.
+    lum2 = 0.299 * img[..., 0] + 0.587 * img[..., 1] + 0.114 * img[..., 2]
+    shadow2 = np.clip(1.0 - lum2 * 2.0, 0, 1)
+    img[..., 2] += shadow2 * 0.055          # sombras hacia el azul
+    img[..., 0] -= shadow2 * 0.012
+    img *= np.array([0.965, 0.995, 1.075], np.float32)   # global frio
+
     # vineta
     vy = (YY - CH / 2) / (CH / 2); vx = (XX - CW / 2) / (CW / 2)
     vig = np.clip(1 - 0.60 * (vx ** 2 + vy ** 2) ** 0.75, 0.30, 1.0)
@@ -617,6 +616,28 @@ def post(img, t, p):
 
     # grano
     img += rng.normal(0, 0.010, (CH, CW, 1)).astype(np.float32)
+
+    # ---- tipografia: por ULTIMO de todo, ya fuera del bloom, la vineta
+    # y el grano. Asi el filo de las letras queda limpio.
+    tg = prog(t, 'title')
+    if tg > 0:
+        up = ease(min(1.0, tg * 1.6))
+        ytmp = TITLE_Y + (1 - up) * 26
+        stamp_wipe(img, T_tit, T_tita, MX, ytmp, T_SCALE, tg, 1.0)
+        wpx = T_tita.shape[1] * T_SCALE
+        fx = MX - wpx / 2 + wpx * tg
+        if 0.02 < tg < 0.999:
+            xx2 = XX - fx
+            gl = np.exp(-(xx2 ** 2) / (2 * (14.0) ** 2)) * \
+                 np.clip(1 - np.abs(YY - ytmp) / (T_tita.shape[0] * T_SCALE * 0.62), 0, 1)
+            gl = np.clip(gl, 0, 1) * 0.80
+            img += np.array([1.0, 0.90, 0.68], np.float32)[None, None, :] * gl[..., None]
+    if t >= ST['rombo'][0]:
+        stamp(img, T_rom, T_roma, MX, ROM_Y, 1.70, prog(t, 'rombo'))
+    if t >= ST['author'][0]:
+        stamp(img, T_aut, T_auta, MX, AUT_Y, 1.75, prog(t, 'author'))
+    if t >= ST['logo'][0]:
+        stamp(img, T_log, T_loga, MX, LOGO_Y, 1.70, prog(t, 'logo'))
 
     img = np.clip(img, 0, 1.5) ** (1 / 1.05)
     img = (img - 0.5) * 1.04 + 0.5
